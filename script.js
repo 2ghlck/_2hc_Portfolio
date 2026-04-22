@@ -1,34 +1,58 @@
 const DEFAULT_DATA = {
   site: {
-    title: "진영 포트폴리오",
-    description: "",
+    title: "영상 포트폴리오 템플릿",
+    description: "영상 편집자와 크리에이터를 위한 정적 포트폴리오 템플릿입니다. site.json만 수정해 브랜드, 작업물, 가격, 문의 정보를 구성할 수 있습니다.",
     githubRepo: "",
     brand: {
       prefix: "studio",
-      name: "jinyeong",
+      name: "your-name",
     },
     nav: {
-      links: [],
+      links: [
+        {
+          label: "홈",
+          href: "index.html#home",
+        },
+        {
+          label: "서비스 및 가격",
+          href: "pricing.html",
+        },
+        {
+          label: "문의하기",
+          href: "contact.html",
+        },
+      ],
       ctaLabel: "문의하기",
       ctaHref: "contact.html",
     },
     footer: {
       enabled: true,
-      linksEnabled: true,
-      title: "STUDIO JINYEONG",
-      copy: "",
+      linksEnabled: false,
+      title: "STUDIO YOUR-NAME",
+      copy: "© 2026 STUDIO YOUR-NAME. 모든 권리 보유.",
       links: [],
     },
   },
   hero: {
     backgroundVideoUrl: "",
-    eyebrow: "",
-    title: "",
-    titleAccent: "",
-    description: "",
-    statusLabel: "",
-    statusText: "",
-    actions: [],
+    eyebrow: "VIDEO PORTFOLIO TEMPLATE",
+    title: "브랜드에 맞는\n영상 포트폴리오를 시작하세요.",
+    titleAccent: "영상 포트폴리오",
+    description: "JSON 데이터만 교체하면 소개 문구, 작업물, 가격, 문의 섹션을 프로젝트에 맞게 빠르게 구성할 수 있습니다.",
+    statusLabel: "Status",
+    statusText: "READY FOR CUSTOMIZATION",
+    actions: [
+      {
+        label: "가격 보기",
+        href: "pricing.html",
+        variant: "primary",
+      },
+      {
+        label: "문의하기",
+        href: "contact.html",
+        variant: "ghost",
+      },
+    ],
     infoPanels: {
       layoutPreset: "1:1",
       career: {
@@ -49,20 +73,20 @@ const DEFAULT_DATA = {
     },
   },
   projects: {
-    enabled: true,
+    enabled: false,
     sectionEyebrow: "",
     sectionTitle: "",
     sectionMeta: "",
     cards: [],
   },
   stats: {
-    enabled: true,
+    enabled: false,
     items: [],
   },
   works: {
-    sectionTitle: "영상 포트폴리오",
+    sectionTitle: "",
     sectionDescription: "",
-    emptyText: "해당 조건의 영상이 없습니다.",
+    emptyText: "영상 항목을 추가하면 이 영역이 자동으로 채워집니다.",
     displayMode: "grid",
     gridColumns: 3,
     categoryStackColumns: 2,
@@ -73,29 +97,61 @@ const DEFAULT_DATA = {
     videos: [],
   },
   pricing: {
-    sectionEyebrow: "",
-    title: "",
-    description: "",
-    plans: [],
-    customWorksEnabled: true,
+    sectionEyebrow: "Pricing Template",
+    title: "서비스 구조를 바로 안내할 수 있게 준비해두세요.",
+    description: "패키지, 포함 항목, 문의 CTA를 예시로 남겨두었습니다. 프로젝트에 맞게 값만 교체하면 됩니다.",
+    plans: [
+      {
+        slug: "starter",
+        badge: "Template Example",
+        icon: "movie_edit",
+        title: "기본 포트폴리오 편집",
+        description: "서비스 설명, 산출물 범위, 수정 횟수 같은 기본 정보를 넣어 구조를 빠르게 완성할 수 있습니다.",
+        price: "₩000,000",
+        priceUnit: "/ 프로젝트",
+        features: [
+          "작업 범위 예시 문구",
+          "수정 정책 예시 문구",
+          "납품 형식 예시 문구",
+        ],
+        cta: {
+          label: "문의하기",
+          href: "contact.html",
+        },
+      },
+    ],
+    customWorksEnabled: false,
     customWorks: [],
-    processEnabled: true,
+    processEnabled: false,
     processTitle: "",
     processSteps: [],
   },
   contact: {
-    eyebrow: "",
-    title: "",
-    titleAccent: "",
-    description: "",
+    eyebrow: "CONTACT",
+    title: "프로젝트 문의는\n이메일로 남겨주세요.",
+    titleAccent: "이메일",
+    description: "메일 주소와 응답 정책을 템플릿으로 남겨두었습니다. 실제 운영 정보로 교체해서 사용하세요.",
     primaryCard: {
-      label: "",
-      value: "",
-      note: "",
-      icon: "",
-      href: "",
+      label: "Email",
+      value: "your@email.com",
+      note: "문의 내용을 간단히 적어 보내주세요.",
+      icon: "mail",
+      href: "mailto:your@email.com",
     },
-    details: [],
+    details: [
+      {
+        label: "Response",
+        value: "Within 2 Business Days",
+      },
+      {
+        label: "Location",
+        value: "Remote / South Korea",
+      },
+      {
+        label: "Availability",
+        value: "Open for Projects",
+      },
+    ],
   },
   freeContent: "",
 };
@@ -117,8 +173,8 @@ const worksFilterState = {
   type: "all",
   category: "all",
 };
-const previewStorageKey = "jinyeong-admin-preview-data";
-const previewMessageType = "jinyeong-preview-data";
+const previewStorageKey = "portfolio-template-admin-preview-data";
+const previewMessageType = "portfolio-template-preview-data";
 
 function $(selector) {
   return document.querySelector(selector);
@@ -1543,7 +1599,7 @@ function renderContact() {
 
   const primary = $("#contact-primary-card");
   if (primary) {
-    const icon = escapeHTML(DATA.contact.primaryCard.icon || "chat");
+    const icon = escapeHTML(DATA.contact.primaryCard.icon || "mail");
     const label = escapeHTML(DATA.contact.primaryCard.label);
     const value = escapeHTML(DATA.contact.primaryCard.value);
     const note = DATA.contact.primaryCard.note

@@ -1,6 +1,6 @@
 const jsonPath = "../data/site.json";
 const githubJsonPath = "data/site.json";
-const githubDefaultBranch = "main";
+const githubDefaultBranch = "gh-pages";
 const previewTargets = {
   brand: {
     title: "브랜드 / 내비 미리보기",
@@ -60,35 +60,59 @@ const previewTargets = {
 
 const DEFAULT_DATA = {
   site: {
-    title: "진영 포트폴리오",
-    description: "",
+    title: "영상 포트폴리오 템플릿",
+    description: "영상 편집자와 크리에이터를 위한 정적 포트폴리오 템플릿입니다. site.json만 수정해 브랜드, 작업물, 가격, 문의 정보를 구성할 수 있습니다.",
     githubRepo: "",
     brand: {
       prefix: "studio",
-      name: "jinyeong",
+      name: "your-name",
     },
     nav: {
-      links: [],
+      links: [
+        {
+          label: "홈",
+          href: "index.html#home",
+        },
+        {
+          label: "서비스 및 가격",
+          href: "pricing.html",
+        },
+        {
+          label: "문의하기",
+          href: "contact.html",
+        },
+      ],
       ctaLabel: "문의하기",
       ctaHref: "contact.html",
     },
     footer: {
       enabled: true,
-      linksEnabled: true,
-      title: "STUDIO JINYEONG",
-      copy: "",
+      linksEnabled: false,
+      title: "STUDIO YOUR-NAME",
+      copy: "© 2026 STUDIO YOUR-NAME. 모든 권리 보유.",
       links: [],
     },
   },
   hero: {
     backgroundVideoUrl: "",
-    eyebrow: "",
-    title: "",
-    titleAccent: "",
-    description: "",
-    statusLabel: "",
-    statusText: "",
-    actions: [],
+    eyebrow: "VIDEO PORTFOLIO TEMPLATE",
+    title: "브랜드에 맞는\n영상 포트폴리오를 시작하세요.",
+    titleAccent: "영상 포트폴리오",
+    description: "JSON 데이터만 교체하면 소개 문구, 작업물, 가격, 문의 섹션을 프로젝트에 맞게 빠르게 구성할 수 있습니다.",
+    statusLabel: "Status",
+    statusText: "READY FOR CUSTOMIZATION",
+    actions: [
+      {
+        label: "가격 보기",
+        href: "pricing.html",
+        variant: "primary",
+      },
+      {
+        label: "문의하기",
+        href: "contact.html",
+        variant: "ghost",
+      },
+    ],
     infoPanels: {
       layoutPreset: "1:1",
       career: {
@@ -109,20 +133,20 @@ const DEFAULT_DATA = {
     },
   },
   projects: {
-    enabled: true,
+    enabled: false,
     sectionEyebrow: "",
     sectionTitle: "",
     sectionMeta: "",
     cards: [],
   },
   stats: {
-    enabled: true,
+    enabled: false,
     items: [],
   },
   works: {
-    sectionTitle: "영상 포트폴리오",
+    sectionTitle: "",
     sectionDescription: "",
-    emptyText: "해당 조건의 영상이 없습니다.",
+    emptyText: "영상 항목을 추가하면 이 영역이 자동으로 채워집니다.",
     displayMode: "grid",
     gridColumns: 3,
     categoryStackColumns: 2,
@@ -133,29 +157,61 @@ const DEFAULT_DATA = {
     videos: [],
   },
   pricing: {
-    sectionEyebrow: "",
-    title: "",
-    description: "",
-    plans: [],
-    customWorksEnabled: true,
+    sectionEyebrow: "Pricing Template",
+    title: "서비스 구조를 바로 안내할 수 있게 준비해두세요.",
+    description: "패키지, 포함 항목, 문의 CTA를 예시로 남겨두었습니다. 프로젝트에 맞게 값만 교체하면 됩니다.",
+    plans: [
+      {
+        slug: "starter",
+        badge: "Template Example",
+        icon: "movie_edit",
+        title: "기본 포트폴리오 편집",
+        description: "서비스 설명, 산출물 범위, 수정 횟수 같은 기본 정보를 넣어 구조를 빠르게 완성할 수 있습니다.",
+        price: "₩000,000",
+        priceUnit: "/ 프로젝트",
+        features: [
+          "작업 범위 예시 문구",
+          "수정 정책 예시 문구",
+          "납품 형식 예시 문구",
+        ],
+        cta: {
+          label: "문의하기",
+          href: "contact.html",
+        },
+      },
+    ],
+    customWorksEnabled: false,
     customWorks: [],
-    processEnabled: true,
+    processEnabled: false,
     processTitle: "",
     processSteps: [],
   },
   contact: {
-    eyebrow: "",
-    title: "",
-    titleAccent: "",
-    description: "",
+    eyebrow: "CONTACT",
+    title: "프로젝트 문의는\n이메일로 남겨주세요.",
+    titleAccent: "이메일",
+    description: "메일 주소와 응답 정책을 템플릿으로 남겨두었습니다. 실제 운영 정보로 교체해서 사용하세요.",
     primaryCard: {
-      label: "",
-      value: "",
-      note: "",
-      icon: "",
-      href: "",
+      label: "Email",
+      value: "your@email.com",
+      note: "문의 내용을 간단히 적어 보내주세요.",
+      icon: "mail",
+      href: "mailto:your@email.com",
     },
-    details: [],
+    details: [
+      {
+        label: "Response",
+        value: "Within 2 Business Days",
+      },
+      {
+        label: "Location",
+        value: "Remote / South Korea",
+      },
+      {
+        label: "Availability",
+        value: "Open for Projects",
+      },
+    ],
   },
   freeContent: "",
 };
@@ -1675,7 +1731,7 @@ function buildBrandPreview() {
         <div class="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-6 py-4 md:px-8 md:py-6">
           <div class="text-2xl font-black uppercase tracking-tighter text-white">
             <span style="letter-spacing:-1.2px;">${escapeHTML(textOrFallback(state.data.site.brand.prefix, "studio"))}</span>
-            <span style="letter-spacing:-1.2px;">${escapeHTML(textOrFallback(state.data.site.brand.name, "jinyeong"))}</span>
+            <span style="letter-spacing:-1.2px;">${escapeHTML(textOrFallback(state.data.site.brand.name, "your-name"))}</span>
           </div>
           <div class="hidden items-center gap-8 md:flex">
             ${renderPreviewNavLinks()}
@@ -1688,8 +1744,8 @@ function buildBrandPreview() {
         <div class="mx-auto max-w-screen-2xl">
           <div class="max-w-3xl rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
             <span class="preview-label-chip">Site Copy</span>
-            <div class="mt-5 text-3xl font-black tracking-tight text-white md:text-5xl">${escapeHTML(textOrFallback(state.data.site.title, "진영 포트폴리오"))}</div>
-            <div class="mt-4 text-sm leading-relaxed text-[#cec6ad] md:text-base">${escapeHTML(textOrFallback(state.data.site.description, "사이트 설명을 입력하면 이 영역에 반영됩니다."))}</div>
+            <div class="mt-5 text-3xl font-black tracking-tight text-white md:text-5xl">${escapeHTML(textOrFallback(state.data.site.title, "영상 포트폴리오 템플릿"))}</div>
+            <div class="mt-4 text-sm leading-relaxed text-[#cec6ad] md:text-base">${escapeHTML(textOrFallback(state.data.site.description, "영상 편집자와 크리에이터를 위한 정적 포트폴리오 템플릿입니다."))}</div>
           </div>
         </div>
       </div>
@@ -1713,9 +1769,9 @@ function buildHeroPreview() {
         <div class="flex w-full flex-col gap-10">
           <div class="flex w-full flex-col gap-12 md:flex-row md:justify-between md:gap-16">
             <div class="max-w-4xl">
-              <span class="mb-5 block text-xs font-bold uppercase tracking-[0.3em] text-[#fde047]">${escapeHTML(textOrFallback(state.data.hero.eyebrow, "VIDEO EDITORIAL PORTFOLIO"))}</span>
-              <div class="text-5xl font-black leading-[0.95] text-white md:text-7xl">${renderPreviewAccentText(textOrFallback(state.data.hero.title, "영상으로\n이야기를 만듭니다."), state.data.hero.titleAccent, "text-[#FDE047]")}</div>
-              <div class="mt-8 max-w-2xl rounded-xl border border-white/10 bg-[#16130a]/30 p-4 text-base font-medium leading-relaxed text-[#cec6ad] backdrop-blur-sm md:text-lg">${escapeWithBreaks(textOrFallback(state.data.hero.description, "히어로 설명을 입력하면 이 영역에 반영됩니다."))}</div>
+              <span class="mb-5 block text-xs font-bold uppercase tracking-[0.3em] text-[#fde047]">${escapeHTML(textOrFallback(state.data.hero.eyebrow, "VIDEO PORTFOLIO TEMPLATE"))}</span>
+              <div class="text-5xl font-black leading-[0.95] text-white md:text-7xl">${renderPreviewAccentText(textOrFallback(state.data.hero.title, "브랜드에 맞는\n영상 포트폴리오를 시작하세요."), state.data.hero.titleAccent, "text-[#FDE047]")}</div>
+              <div class="mt-8 max-w-2xl rounded-xl border border-white/10 bg-[#16130a]/30 p-4 text-base font-medium leading-relaxed text-[#cec6ad] backdrop-blur-sm md:text-lg">${escapeWithBreaks(textOrFallback(state.data.hero.description, "JSON 데이터만 교체하면 소개 문구와 섹션 구성을 빠르게 바꿀 수 있습니다."))}</div>
               <div class="mt-8 flex flex-wrap gap-4">
                 ${renderPreviewHeroActions()}
               </div>
@@ -1725,7 +1781,7 @@ function buildHeroPreview() {
                 <span class="text-[10px] uppercase tracking-[0.2em] text-[#cec6ad]">${escapeHTML(textOrFallback(state.data.hero.statusLabel, "Status"))}</span>
                 <div class="flex items-center gap-2">
                   <span class="h-2 w-2 rounded-full bg-[#3bf7ff]"></span>
-                  <span class="text-xs font-bold text-white">${escapeHTML(textOrFallback(state.data.hero.statusText, "AVAILABLE FOR NEW PROJECTS"))}</span>
+                  <span class="text-xs font-bold text-white">${escapeHTML(textOrFallback(state.data.hero.statusText, "READY FOR CUSTOMIZATION"))}</span>
                 </div>
               </div>
             </div>
@@ -1786,12 +1842,20 @@ function buildStatsPreview() {
 
 function buildWorksPreview() {
   const works = state.data.works || DEFAULT_DATA.works;
+  const hasSectionShell = Boolean(String(works.sectionTitle || "").trim() || String(works.sectionDescription || "").trim() || works.videos.length);
   const description = String(state.data.works.sectionDescription || "").trim();
   const videos = getSortedWorksVideos(state.data.works.videos);
   const categories = getOrderedWorksCategories(videos, works.categoryOrder);
   const hasVideos = videos.length > 0;
   const hasShortVideos = videos.some((video) => video.type === "short");
   const displayMode = normalizeWorksDisplayMode(works.displayMode);
+  if (!hasSectionShell) {
+    return `
+      <section class="preview-render-root bg-[#16130a] px-6 py-14 text-[#e9e2d2] md:px-8" style="font-family:'Epilogue', sans-serif;">
+        <div class="mx-auto max-w-screen-2xl">${previewHiddenBlock("영상 항목을 추가하면 작업물 섹션이 표시됩니다.")}</div>
+      </section>
+    `;
+  }
   const filtersMarkup = !hasVideos
     ? ""
     : displayMode === "category-stack"
@@ -1853,9 +1917,9 @@ function buildPricingPreview() {
     <section class="preview-render-root bg-[#16130a] px-6 py-16 text-[#e9e2d2] md:px-8" style="font-family:'Epilogue', sans-serif;">
       <div id="pricing" class="mx-auto max-w-screen-xl">
         <header class="mb-16">
-          <div class="mb-4 inline-block rounded-sm bg-white/10 px-3 py-1 text-[0.6875rem] font-bold uppercase tracking-[0.2em] text-[#fde047]">${escapeHTML(textOrFallback(state.data.pricing.sectionEyebrow, "Pricing & Packages"))}</div>
-          <div class="mb-6 text-4xl font-black leading-[1.1] tracking-tighter text-white md:text-6xl">${escapeHTML(textOrFallback(state.data.pricing.title, "당신의 비전을 편집의 예술로."))}</div>
-          <div class="max-w-2xl text-lg leading-relaxed text-[#cec6ad]">${escapeHTML(textOrFallback(state.data.pricing.description, "가격 섹션 설명을 입력하면 이 영역에 반영됩니다."))}</div>
+          <div class="mb-4 inline-block rounded-sm bg-white/10 px-3 py-1 text-[0.6875rem] font-bold uppercase tracking-[0.2em] text-[#fde047]">${escapeHTML(textOrFallback(state.data.pricing.sectionEyebrow, "Pricing Template"))}</div>
+          <div class="mb-6 text-4xl font-black leading-[1.1] tracking-tighter text-white md:text-6xl">${escapeHTML(textOrFallback(state.data.pricing.title, "서비스 구조를 바로 안내할 수 있게 준비해두세요."))}</div>
+          <div class="max-w-2xl text-lg leading-relaxed text-[#cec6ad]">${escapeHTML(textOrFallback(state.data.pricing.description, "패키지, 포함 항목, 문의 CTA를 예시로 남겨두었습니다."))}</div>
         </header>
 
         <div class="grid gap-6 md:grid-cols-2">
@@ -1882,16 +1946,16 @@ function buildContactFooterPreview() {
         <div class="mx-auto max-w-screen-2xl">
           <div class="text-center">
             <span class="mb-6 block text-[0.75rem] uppercase tracking-[0.3em] text-[#fde047] md:text-[0.875rem]">${escapeHTML(textOrFallback(state.data.contact.eyebrow, "CONTACT ME"))}</span>
-            <div class="mb-4 text-4xl font-extrabold leading-tight tracking-tight text-white md:text-6xl">${renderPreviewAccentText(textOrFallback(state.data.contact.title, "빠른 소통을 위해 디스코드로 연락주세요."), state.data.contact.titleAccent, "text-[#fde047]")}</div>
-            <div class="mx-auto mb-12 max-w-2xl text-lg text-[#cec6ad] opacity-80">${escapeHTML(textOrFallback(state.data.contact.description, "문의 설명을 입력하면 이 영역에 반영됩니다."))}</div>
+            <div class="mb-4 text-4xl font-extrabold leading-tight tracking-tight text-white md:text-6xl">${renderPreviewAccentText(textOrFallback(state.data.contact.title, "프로젝트 문의는\n이메일로 남겨주세요."), state.data.contact.titleAccent, "text-[#fde047]")}</div>
+            <div class="mx-auto mb-12 max-w-2xl text-lg text-[#cec6ad] opacity-80">${escapeHTML(textOrFallback(state.data.contact.description, "메일 주소와 응답 정책을 템플릿으로 남겨두었습니다."))}</div>
 
             <div class="group relative inline-flex items-center justify-center rounded-2xl bg-gradient-to-tr from-[#fde047]/20 to-transparent p-1">
               <div class="rounded-xl border border-white/10 bg-[#1e1c12] px-10 py-12 md:px-20 md:py-16">
                 <div class="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fde047] shadow-[0_0_40px_rgba(253,224,71,0.2)] mx-auto">
-                  <span class="material-symbols-outlined text-4xl font-bold text-[#211b00]">${escapeHTML(textOrFallback(state.data.contact.primaryCard.icon, "chat"))}</span>
+                  <span class="material-symbols-outlined text-4xl font-bold text-[#211b00]">${escapeHTML(textOrFallback(state.data.contact.primaryCard.icon, "mail"))}</span>
                 </div>
-                <span class="mb-3 block text-xs uppercase tracking-[0.2em] text-[#97917a]">${escapeHTML(textOrFallback(state.data.contact.primaryCard.label, "Discord ID"))}</span>
-                <strong class="text-3xl font-bold tracking-tighter text-white md:text-5xl">${escapeHTML(textOrFallback(state.data.contact.primaryCard.value, "jinyeoung_"))}</strong>
+                <span class="mb-3 block text-xs uppercase tracking-[0.2em] text-[#97917a]">${escapeHTML(textOrFallback(state.data.contact.primaryCard.label, "Email"))}</span>
+                <strong class="text-3xl font-bold tracking-tighter text-white md:text-5xl">${escapeHTML(textOrFallback(state.data.contact.primaryCard.value, "your@email.com"))}</strong>
                 ${state.data.contact.primaryCard.note ? `
                   <div class="mt-8 flex items-center justify-center gap-2 text-sm font-medium text-[#fde047]/70">
                     <span class="material-symbols-outlined text-sm">info</span>
@@ -1925,13 +1989,13 @@ function buildContactFooterPreview() {
       ${footerEnabled
         ? `<footer class="w-full px-6 py-16 md:px-8 md:py-20">
              <div class="mx-auto flex max-w-screen-2xl flex-col items-center gap-10 border-t border-white/10 pt-12 text-center">
-               <div class="text-3xl font-black uppercase tracking-tighter text-white md:text-4xl">${escapeHTML(textOrFallback(state.data.site.footer.title, "STUDIO JINYEONG"))}</div>
+               <div class="text-3xl font-black uppercase tracking-tighter text-white md:text-4xl">${escapeHTML(textOrFallback(state.data.site.footer.title, "STUDIO YOUR-NAME"))}</div>
                ${state.data.site.footer.linksEnabled === false
                  ? ""
                  : `<div class="flex flex-wrap items-center justify-center gap-4">
                       ${renderPreviewFooterLinks()}
                     </div>`}
-               <div class="text-[0.6875rem] uppercase tracking-[0.15em] text-[#97917a] opacity-60">${escapeHTML(textOrFallback(state.data.site.footer.copy, "© 2026 STUDIO JINYEONG. 모든 권리 보유."))}</div>
+               <div class="text-[0.6875rem] uppercase tracking-[0.15em] text-[#97917a] opacity-60">${escapeHTML(textOrFallback(state.data.site.footer.copy, "© 2026 STUDIO YOUR-NAME. 모든 권리 보유."))}</div>
              </div>
            </footer>`
         : `<div class="px-6 pb-12 md:px-8">${previewHiddenBlock("푸터가 꺼져 있습니다.")}</div>`}
