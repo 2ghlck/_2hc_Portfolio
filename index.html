@@ -111,6 +111,17 @@
       object-fit: cover;
       z-index: 0;
     }
+    .hero-video-embed {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      pointer-events: none;
+      z-index: 0;
+      transform: scale(1.28);
+      transform-origin: center;
+    }
     .hero-overlay {
       position: absolute;
       inset: 0;
@@ -138,7 +149,7 @@
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     }
     .works-grid {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
     .process-grid {
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -216,6 +227,8 @@
       transform: translateY(-1px);
     }
     .works-card {
+      display: block;
+      width: 100%;
       overflow: hidden;
       border: 1px solid rgba(75, 71, 52, 0.8);
       border-radius: 1rem;
@@ -226,6 +239,89 @@
       transform: translateY(-2px);
       border-color: rgba(253, 224, 71, 0.5);
       box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+    }
+    .works-grid[data-columns="1"],
+    .works-category-grid[data-columns="1"] {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    .works-grid[data-columns="2"],
+    .works-category-grid[data-columns="2"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .works-grid[data-columns="3"],
+    .works-category-grid[data-columns="3"] {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .works-grid[data-columns="4"],
+    .works-category-grid[data-columns="4"] {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .works-grid[data-columns="5"],
+    .works-category-grid[data-columns="5"] {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .works-grid[data-columns="6"],
+    .works-category-grid[data-columns="6"] {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .works-grid[data-columns="7"],
+    .works-category-grid[data-columns="7"] {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+    .works-grid[data-columns="8"],
+    .works-category-grid[data-columns="8"] {
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+    .works-category-stack {
+      display: grid;
+      gap: 3rem;
+    }
+    .works-category-section {
+      display: grid;
+      gap: 1.25rem;
+    }
+    .works-category-heading {
+      display: grid;
+      gap: 0.4rem;
+    }
+    .works-category-kicker {
+      color: #97917a;
+      font-size: 0.6875rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .works-category-title {
+      margin: 0;
+      color: #ffffff;
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+    }
+    .works-category-subcopy {
+      max-width: 52rem;
+      color: #cec6ad;
+      font-size: 0.75rem;
+      line-height: 1.7;
+      letter-spacing: 0.04em;
+      white-space: pre-line;
+    }
+    .works-category-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+    .works-category-grid[data-columns="1"] {
+      justify-items: center;
+    }
+    .works-category-grid[data-columns="1"] .works-card {
+      max-width: 100%;
+    }
+    .works-category-grid[data-columns="1"][data-single-size="medium"] .works-card {
+      max-width: calc((100% - 1.5rem) / 2);
+    }
+    .works-category-grid[data-columns="1"][data-single-size="small"] .works-card {
+      max-width: calc((100% - 3rem) / 3);
     }
     .works-thumb {
       position: relative;
@@ -273,10 +369,10 @@
       padding: 1.25rem;
     }
     .works-card-title {
-      font-size: 1.375rem;
+      font-size: 1.125rem;
       font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -0.04em;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
       color: #ffffff;
       transition: color .3s ease;
     }
@@ -354,9 +450,200 @@
       position: relative;
       z-index: 2;
     }
+    .hero-content {
+      display: flex;
+      width: 100%;
+      flex-direction: column;
+      gap: 3.5rem;
+    }
+    .hero-info-grid {
+      width: 100%;
+    }
+    .hero-info-grid.is-split {
+      display: grid;
+      gap: 1.5rem;
+    }
+    .hero-info-grid.is-split:not([data-layout-preset]),
+    .hero-info-grid.is-split[data-layout-preset="1:1"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+    }
+    .hero-info-grid.is-split[data-layout-preset="2:1:1"] {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+      align-items: stretch;
+    }
+    .hero-info-grid.is-generic {
+      display: grid;
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+    .hero-info-grid.is-generic[data-count="1"] {
+      grid-template-columns: minmax(0, min(100%, 42rem));
+    }
+    .hero-info-grid.is-generic[data-count="2"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .hero-info-stack {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-rows: auto auto;
+      align-content: start;
+    }
+    .hero-info-grid.is-split[data-layout-preset="2:1:1"] > .hero-info-stack {
+      display: contents;
+    }
+    .hero-info-grid.is-split:not([data-layout-preset]) > .hero-info-card[data-panel="career"],
+    .hero-info-grid.is-split[data-layout-preset="1:1"] > .hero-info-card[data-panel="career"] {
+      height: 100%;
+    }
+    .hero-info-grid.is-split[data-layout-preset="2:1:1"] .hero-info-card {
+      height: 100%;
+    }
+    .hero-info-card {
+      min-width: 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      background: rgba(30, 28, 18, 0.7);
+      backdrop-filter: blur(22px);
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.24);
+      padding: 1.5rem;
+    }
+    .hero-info-card[data-panel="career"] {
+      background:
+        linear-gradient(180deg, rgba(59, 55, 41, 0.32), rgba(22, 19, 10, 0.84)),
+        rgba(30, 28, 18, 0.76);
+    }
+    .hero-info-card[data-panel="tools"],
+    .hero-info-card[data-panel="bgm"] {
+      background:
+        linear-gradient(180deg, rgba(253, 224, 71, 0.04), rgba(30, 28, 18, 0.88)),
+        rgba(30, 28, 18, 0.76);
+    }
+    .hero-info-card-title {
+      margin-bottom: 1rem;
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .hero-career-list,
+    .hero-resource-list {
+      display: grid;
+      gap: 0.9rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .hero-career-item {
+      display: grid;
+      gap: 0.5rem;
+      padding-bottom: 0.9rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .hero-career-item:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+    .hero-career-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .hero-career-name,
+    .hero-career-text {
+      color: #ffffff;
+      font-size: 1.1875rem;
+      font-weight: 700;
+      line-height: 1.38;
+    }
+    .hero-career-period {
+      color: #fde047;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .hero-career-description,
+    .hero-career-freeform {
+      color: #cec6ad;
+      font-size: 1rem;
+      line-height: 1.72;
+    }
+    .hero-career-freeform {
+      white-space: pre-line;
+    }
+    .hero-resource-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      min-width: 0;
+    }
+    .hero-resource-logo {
+      flex: 0 0 auto;
+      width: 2.35rem;
+      height: 2.2325rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 0.72rem;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+    .hero-resource-logo.is-hidden {
+      display: none;
+    }
+    .hero-resource-logo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      padding: 0.16rem;
+      object-fit: contain;
+      background: transparent;
+    }
+    .hero-resource-name {
+      min-width: 0;
+      color: #f4ffff;
+      font-size: 0.93rem;
+      font-weight: 700;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .works-grid[data-columns="3"],
+      .works-grid[data-columns="4"],
+      .works-grid[data-columns="5"],
+      .works-grid[data-columns="6"],
+      .works-grid[data-columns="7"],
+      .works-grid[data-columns="8"],
+      .works-category-grid[data-columns="3"],
+      .works-category-grid[data-columns="4"],
+      .works-category-grid[data-columns="5"],
+      .works-category-grid[data-columns="6"],
+      .works-category-grid[data-columns="7"],
+      .works-category-grid[data-columns="8"] {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
     @media (max-width: 767px) {
       .hero-video-container {
         min-height: auto;
+      }
+      .hero-content {
+        gap: 2rem;
+      }
+      .hero-info-grid.is-split,
+      .hero-info-grid.is-generic[data-count="2"] {
+        grid-template-columns: 1fr;
+      }
+      .hero-info-stack {
+        grid-template-rows: none;
+      }
+      .hero-info-card {
+        padding: 1.25rem;
+      }
+      .hero-info-card-title {
+        font-size: 1.25rem;
       }
       .works-filter-toolbar {
         align-items: stretch;
@@ -370,6 +657,41 @@
       }
       .works-filter-divider {
         display: none;
+      }
+      .works-grid,
+      .works-category-grid,
+      .works-grid[data-columns="2"],
+      .works-grid[data-columns="3"],
+      .works-grid[data-columns="4"],
+      .works-grid[data-columns="5"],
+      .works-grid[data-columns="6"],
+      .works-grid[data-columns="7"],
+      .works-grid[data-columns="8"],
+      .works-category-grid[data-columns="2"],
+      .works-category-grid[data-columns="3"],
+      .works-category-grid[data-columns="4"],
+      .works-category-grid[data-columns="5"],
+      .works-category-grid[data-columns="6"],
+      .works-category-grid[data-columns="7"],
+      .works-category-grid[data-columns="8"] {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+      .works-category-stack {
+        gap: 2.25rem;
+      }
+      .works-category-section {
+        gap: 1rem;
+      }
+      .works-category-title {
+        font-size: 1.55rem;
+      }
+      .works-category-subcopy {
+        font-size: 0.75rem;
+      }
+      .works-category-grid[data-columns="1"] .works-card,
+      .works-category-grid[data-columns="1"][data-single-size="medium"] .works-card,
+      .works-category-grid[data-columns="1"][data-single-size="small"] .works-card {
+        max-width: 100%;
       }
       .project-card[data-layout="featured"],
       .project-card[data-layout="secondary"] {
@@ -413,24 +735,34 @@
       <video id="hero-video" class="hero-video" autoplay loop muted playsinline>
         <source id="hero-video-source" src="" type="video/mp4">
       </video>
+      <iframe
+        id="hero-youtube"
+        class="hero-video-embed"
+        title="Hero background video"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        referrerpolicy="strict-origin-when-cross-origin"
+        hidden></iframe>
       <div class="hero-overlay"></div>
       <div class="site-shell mx-auto flex h-full max-w-screen-2xl items-start px-6 pt-36 pb-20 md:px-8 md:pt-48">
-        <div class="flex w-full flex-col gap-12 md:flex-row md:justify-between md:gap-16">
-          <div class="max-w-4xl">
-            <span id="hero-eyebrow" class="mb-5 block text-xs font-bold uppercase tracking-[0.3em] text-primary-container"></span>
-            <h1 id="hero-title" class="text-shadow-lg text-5xl font-black leading-[0.95] text-white md:text-7xl lg:text-8xl"></h1>
-            <p id="hero-description" class="mt-8 max-w-2xl rounded-xl border border-white/10 bg-surface/20 p-4 text-base font-medium leading-relaxed text-on-surface-variant backdrop-blur-sm md:text-lg"></p>
-            <div id="hero-actions" class="mt-8 flex flex-wrap gap-4"></div>
-          </div>
-          <div id="hero-status" class="hidden lg:block">
-            <div class="flex flex-col items-end gap-2 text-right">
-              <span id="hero-status-label" class="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant"></span>
-              <div class="flex items-center gap-2">
-                <span class="h-2 w-2 rounded-full bg-tertiary-container animate-pulse"></span>
-                <span id="hero-status-text" class="text-shadow-lg text-xs font-bold text-on-surface"></span>
+        <div class="hero-content">
+          <div class="flex w-full flex-col gap-12 md:flex-row md:justify-between md:gap-16">
+            <div class="max-w-4xl">
+              <span id="hero-eyebrow" class="mb-5 block text-xs font-bold uppercase tracking-[0.3em] text-primary-container"></span>
+              <h1 id="hero-title" class="text-shadow-lg text-5xl font-black leading-[0.95] text-white md:text-7xl lg:text-8xl"></h1>
+              <p id="hero-description" class="mt-8 max-w-2xl rounded-xl border border-white/10 bg-surface/20 p-4 text-base font-medium leading-relaxed text-on-surface-variant backdrop-blur-sm md:text-lg"></p>
+              <div id="hero-actions" class="mt-8 flex flex-wrap gap-4"></div>
+            </div>
+            <div id="hero-status" class="hidden lg:block">
+              <div class="flex flex-col items-end gap-2 text-right">
+                <span id="hero-status-label" class="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant"></span>
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full bg-tertiary-container animate-pulse"></span>
+                  <span id="hero-status-text" class="text-shadow-lg text-xs font-bold text-on-surface"></span>
+                </div>
               </div>
             </div>
           </div>
+          <div id="hero-info-panels" class="hero-info-grid" hidden></div>
         </div>
       </div>
     </section>
@@ -464,6 +796,7 @@
           <p id="works-description" class="max-w-2xl text-sm leading-relaxed text-on-surface-variant md:text-base"></p>
         </div>
         <div id="works-filters" class="works-filter-toolbar mb-10" hidden></div>
+        <div id="works-groups" hidden></div>
         <div id="works-grid" class="works-grid"></div>
         <div id="works-empty" class="works-empty mt-6" hidden></div>
       </div>
@@ -484,6 +817,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=20260421-2"></script>
+  <script src="script.js?v=20260422-5"></script>
 </body>
 </html>

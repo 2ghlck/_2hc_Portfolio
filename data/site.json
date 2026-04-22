@@ -30,6 +30,8 @@
       "ctaHref": "contact.html"
     },
     "footer": {
+      "enabled": true,
+      "linksEnabled": true,
       "title": "STUDIO JINYEONG",
       "copy": "© 2026 STUDIO JINYEONG. 모든 권리 보유.",
       "links": [
@@ -67,9 +69,28 @@
         "href": "contact.html",
         "variant": "ghost"
       }
-    ]
+    ],
+    "infoPanels": {
+      "layoutPreset": "1:1",
+      "career": {
+        "title": "경력사항",
+        "mode": "structured",
+        "structuredItems": [],
+        "simpleItems": [],
+        "freeformText": ""
+      },
+      "tools": {
+        "title": "사용 가능한 툴",
+        "items": []
+      },
+      "bgm": {
+        "title": "BGM 사용 툴",
+        "items": []
+      }
+    }
   },
   "projects": {
+    "enabled": true,
     "sectionEyebrow": "Featured Works",
     "sectionTitle": "SELECTED PROJECT",
     "sectionMeta": "2024 COLLECTION",
@@ -122,6 +143,7 @@
     ]
   },
   "stats": {
+    "enabled": true,
     "items": [
       {
         "value": "150+",
@@ -145,12 +167,21 @@
     "sectionTitle": "영상 포트폴리오",
     "sectionDescription": "",
     "emptyText": "해당 조건의 영상이 없습니다.",
+    "displayMode": "grid",
+    "gridColumns": 3,
+    "categoryStackColumns": 2,
+    "categoryStackTypeFilterEnabled": false,
+    "categoryStackSingleColumnSize": "medium",
+    "categoryOrder": [],
+    "categoryEntries": [],
     "videos": []
   },
   "pricing": {
     "sectionEyebrow": "Pricing & Packages",
     "title": "당신의 비전을 편집의 예술로.",
     "description": "크리에이터의 개성과 브랜드의 가치를 극대화하는 맞춤형 비디오 편집 솔루션입니다. 전문적인 기술력과 감각적인 연출로 결과의 차이를 만듭니다.",
+    "customWorksEnabled": true,
+    "processEnabled": true,
     "plans": [
       {
         "slug": "short",
@@ -190,15 +221,17 @@
         }
       }
     ],
-    "customWork": {
-      "eyebrow": "Studio Quality",
-      "title": "커스텀 작업이 필요하신가요?",
-      "description": "정해진 패키지 외에 장기 프로젝트, 채널 운영 대행, 또는 특수 효과 중심의 작업이 필요하시다면 언제든 연락주세요. 브랜드의 톤앤매너에 맞춘 맞춤형 워크플로우를 제안해 드립니다.",
-      "highlight": "FAST & ACCURATE",
-      "caption": "압도적인 퀄리티의 비결",
-      "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuBZozNSg439Jr5HwaBHhUNnlhHsrJnr8kPKbt8YD7OWhVeMpDDUFoGI3AgbsZCwir7D96lrF_qmuzO6FORtIQYyREZj1j1UyE9MssCZMnuLSiN5Uky6fgJL5zjZ5Nwl76dqCS7SnNgYN8sUEYYbJLNSLl5cVN_vtmRYwNZWm9lpqZjJkTrKdgfdRpGperFopbRMX37alXpyTa1XbAZ-DGHmLy8Acb7-YAZqkTQonYdKc3HGPB2kcM0QJc-X6EMos5ZrbYBhm9uK71w",
-      "imageAlt": "dark video editing suite with yellow and cyan lights"
-    },
+    "customWorks": [
+      {
+        "eyebrow": "Studio Quality",
+        "title": "커스텀 작업이 필요하신가요?",
+        "description": "정해진 패키지 외에 장기 프로젝트, 채널 운영 대행, 또는 특수 효과 중심의 작업이 필요하시다면 언제든 연락주세요. 브랜드의 톤앤매너에 맞춘 맞춤형 워크플로우를 제안해 드립니다.",
+        "highlight": "FAST & ACCURATE",
+        "caption": "압도적인 퀄리티의 비결",
+        "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuBZozNSg439Jr5HwaBHhUNnlhHsrJnr8kPKbt8YD7OWhVeMpDDUFoGI3AgbsZCwir7D96lrF_qmuzO6FORtIQYyREZj1j1UyE9MssCZMnuLSiN5Uky6fgJL5zjZ5Nwl76dqCS7SnNgYN8sUEYYbJLNSLl5cVN_vtmRYwNZWm9lpqZjJkTrKdgfdRpGperFopbRMX37alXpyTa1XbAZ-DGHmLy8Acb7-YAZqkTQonYdKc3HGPB2kcM0QJc-X6EMos5ZrbYBhm9uK71w",
+        "imageAlt": "dark video editing suite with yellow and cyan lights"
+      }
+    ],
     "processTitle": "진행 프로세스 및 정책",
     "processSteps": [
       {

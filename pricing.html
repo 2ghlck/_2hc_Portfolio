@@ -108,7 +108,7 @@
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
     .process-grid {
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
     }
     .footer-links {
       grid-template-columns: repeat(auto-fit, minmax(120px, max-content));
@@ -123,6 +123,168 @@
     }
     .mobile-nav-panel {
       background: rgba(22, 19, 10, 0.96);
+    }
+    .custom-works-list {
+      display: grid;
+      gap: 1.5rem;
+    }
+    .custom-work-block {
+      display: grid;
+      gap: 1.5rem;
+      align-items: stretch;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .custom-work-block[data-direction="media-first"] > .custom-work-copy {
+      order: 2;
+    }
+    .custom-work-block[data-direction="media-first"] > .custom-work-media {
+      order: 1;
+    }
+    .custom-work-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+      background: #1e1c12;
+      padding: 2.5rem;
+    }
+    .custom-work-title {
+      margin: 0 0 1.5rem;
+      color: #ffffff;
+      font-size: 1.875rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .custom-work-description {
+      margin: 0 0 2rem;
+      color: #cec6ad;
+      line-height: 1.8;
+    }
+    .custom-work-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .custom-work-highlight {
+      color: #fde047;
+      font-size: 1.25rem;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -0.02em;
+    }
+    .custom-work-line {
+      flex: 1 1 auto;
+      height: 1px;
+      background: rgba(75, 71, 52, 0.8);
+    }
+    .custom-work-media {
+      position: relative;
+      min-height: 320px;
+      overflow: hidden;
+      background: #2d2a1f;
+    }
+    .custom-work-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(1);
+      transition: transform .7s ease, filter .7s ease;
+    }
+    .custom-work-block:hover .custom-work-image {
+      transform: scale(1.06);
+      filter: grayscale(0);
+    }
+    .custom-work-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+      color: #8b8577;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      text-align: center;
+      padding: 1.5rem;
+    }
+    .custom-work-media-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(22, 19, 10, 0.96), rgba(22, 19, 10, 0));
+      opacity: 0.72;
+      pointer-events: none;
+    }
+    .custom-work-caption-wrap {
+      position: absolute;
+      left: 2rem;
+      right: 2rem;
+      bottom: 2rem;
+      z-index: 1;
+    }
+    .custom-work-eyebrow {
+      margin-bottom: 0.5rem;
+      color: #fde047;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+    .custom-work-caption {
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .process-grid {
+      display: grid;
+      gap: 1rem;
+    }
+    .process-grid-row {
+      display: grid;
+      gap: 1rem;
+      margin-inline: auto;
+      width: 100%;
+    }
+    .process-grid-row[data-columns="1"] {
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 18rem;
+    }
+    .process-grid-row[data-columns="2"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 38rem;
+    }
+    .process-grid-row[data-columns="3"] {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      max-width: 58rem;
+    }
+    .process-grid-row[data-columns="4"] {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      max-width: 100%;
+    }
+    .process-step-card {
+      display: grid;
+      gap: 1rem;
+      min-width: 0;
+    }
+    .process-step-number {
+      color: rgba(253, 224, 71, 0.32);
+      font-size: 1.5rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .process-step-title {
+      margin: 0;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+    .process-step-copy {
+      margin: 0;
+      color: #cec6ad;
+      font-size: 0.75rem;
+      line-height: 1.7;
     }
     .desktop-nav-links {
       position: relative;
@@ -154,6 +316,27 @@
       transform: translateX(0);
       transition: transform .28s ease, width .28s ease, opacity .2s ease;
       will-change: transform, width;
+    }
+    @media (max-width: 767px) {
+      .custom-work-block {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .custom-work-block[data-direction="media-first"] > .custom-work-copy,
+      .custom-work-block[data-direction="media-first"] > .custom-work-media {
+        order: initial;
+      }
+      .custom-work-copy {
+        padding: 2rem;
+      }
+      .custom-work-caption-wrap {
+        left: 1.5rem;
+        right: 1.5rem;
+        bottom: 1.5rem;
+      }
+      .process-grid-row {
+        grid-template-columns: minmax(0, 1fr) !important;
+        max-width: 100% !important;
+      }
     }
   </style>
 </head>
@@ -191,25 +374,9 @@
 
         <div id="pricing-plans" class="plans-grid"></div>
 
-        <div class="mt-24 grid gap-6 md:grid-cols-2">
-          <section id="custom-work-copy" class="flex flex-col justify-center bg-surface-container-low p-10">
-            <h2 id="custom-work-title" class="mb-6 text-3xl font-bold"></h2>
-            <p id="custom-work-description" class="mb-8 leading-relaxed text-on-surface-variant"></p>
-            <div class="flex items-center gap-4">
-              <span id="custom-work-highlight" class="text-xl font-black italic tracking-tight text-primary-container"></span>
-              <span class="h-px flex-1 bg-outline-variant"></span>
-            </div>
-          </section>
-
-          <section id="custom-work-media" class="group relative h-[320px] overflow-hidden md:h-[400px]">
-            <img id="custom-work-image" class="h-full w-full object-cover grayscale transition-transform duration-700 group-hover:scale-110 group-hover:grayscale-0" alt="" src="">
-            <div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent opacity-60"></div>
-            <div class="absolute bottom-8 left-8">
-              <div id="custom-work-eyebrow" class="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary-container"></div>
-              <div id="custom-work-caption" class="text-2xl font-bold"></div>
-            </div>
-          </section>
-        </div>
+        <section id="custom-works-section" class="mt-24">
+          <div id="custom-works-list" class="custom-works-list"></div>
+        </section>
 
         <section id="process-section" class="mt-24 border-t border-outline-variant pt-16">
           <h2 id="process-title" class="mb-10 text-center text-2xl font-bold"></h2>
@@ -227,6 +394,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=20260421-2"></script>
+  <script src="script.js?v=20260422-5"></script>
 </body>
 </html>

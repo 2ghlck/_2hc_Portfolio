@@ -13,6 +13,8 @@ const DEFAULT_DATA = {
       ctaHref: "contact.html",
     },
     footer: {
+      enabled: true,
+      linksEnabled: true,
       title: "STUDIO JINYEONG",
       copy: "",
       links: [],
@@ -27,20 +29,47 @@ const DEFAULT_DATA = {
     statusLabel: "",
     statusText: "",
     actions: [],
+    infoPanels: {
+      layoutPreset: "1:1",
+      career: {
+        title: "경력사항",
+        mode: "structured",
+        structuredItems: [],
+        simpleItems: [],
+        freeformText: "",
+      },
+      tools: {
+        title: "사용 가능한 툴",
+        items: [],
+      },
+      bgm: {
+        title: "BGM 사용 툴",
+        items: [],
+      },
+    },
   },
   projects: {
+    enabled: true,
     sectionEyebrow: "",
     sectionTitle: "",
     sectionMeta: "",
     cards: [],
   },
   stats: {
+    enabled: true,
     items: [],
   },
   works: {
     sectionTitle: "영상 포트폴리오",
     sectionDescription: "",
     emptyText: "해당 조건의 영상이 없습니다.",
+    displayMode: "grid",
+    gridColumns: 3,
+    categoryStackColumns: 2,
+    categoryStackTypeFilterEnabled: false,
+    categoryStackSingleColumnSize: "medium",
+    categoryOrder: [],
+    categoryEntries: [],
     videos: [],
   },
   pricing: {
@@ -48,15 +77,9 @@ const DEFAULT_DATA = {
     title: "",
     description: "",
     plans: [],
-    customWork: {
-      eyebrow: "",
-      title: "",
-      description: "",
-      highlight: "",
-      caption: "",
-      imageUrl: "",
-      imageAlt: "",
-    },
+    customWorksEnabled: true,
+    customWorks: [],
+    processEnabled: true,
     processTitle: "",
     processSteps: [],
   },
@@ -119,6 +142,10 @@ function escapeHTML(value) {
   })[char]);
 }
 
+function escapeWithBreaks(value) {
+  return escapeHTML(value).replace(/\n/g, "<br>");
+}
+
 function videoThumb(id) {
   return `https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`;
 }
@@ -149,6 +176,84 @@ function getWorksCategories(videos) {
   }, []);
 }
 
+function normalizeWorksDisplayMode(value) {
+  return value === "category-stack" ? "category-stack" : "grid";
+}
+
+function normalizeWorksColumnCount(value, fallback) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 8 ? parsed : fallback;
+}
+
+function normalizeWorksSingleColumnSize(value) {
+  return ["large", "medium", "small"].includes(String(value || "").trim())
+    ? String(value).trim()
+    : "medium";
+}
+
+function normalizeWorksCategoryOrder(items, videos) {
+  const detected = getWorksCategories(videos);
+  const seen = new Set();
+  const preserved = (Array.isArray(items) ? items : [])
+    .map((item) => String(item || "").trim())
+    .filter((item) => {
+      if (!item || seen.has(item) || !detected.includes(item)) return false;
+      seen.add(item);
+      return true;
+    });
+  const newCategories = detected.filter((category) => !seen.has(category));
+  return [...newCategories, ...preserved];
+}
+
+function getOrderedWorksCategories(videos, order) {
+  return normalizeWorksCategoryOrder(order, videos);
+}
+
+function normalizeWorksCategoryEntries(items, videos, order) {
+  const categories = getOrderedWorksCategories(videos, order);
+  const entryMap = new Map(
+    (Array.isArray(items) ? items : [])
+      .map((item) => ({
+        category: String(item?.category || "").trim(),
+        title: String(item?.title || "").trim(),
+        meta: String(item?.meta || item?.description || "").trim(),
+        columns: Number.isInteger(Number(item?.columns)) ? Number(item.columns) : null,
+        singleColumnSize: ["large", "medium", "small"].includes(String(item?.singleColumnSize || "").trim())
+          ? String(item.singleColumnSize).trim()
+          : "",
+      }))
+      .filter((item) => item.category)
+      .map((item) => [item.category, item]),
+  );
+
+  return categories.map((category) => {
+    const entry = entryMap.get(category);
+    return {
+      category,
+      title: String(entry?.title || "").trim(),
+      meta: String(entry?.meta || "").trim(),
+      columns: Number.isInteger(Number(entry?.columns)) && Number(entry.columns) >= 1 && Number(entry.columns) <= 8
+        ? Number(entry.columns)
+        : null,
+      singleColumnSize: ["large", "medium", "small"].includes(String(entry?.singleColumnSize || "").trim())
+        ? String(entry.singleColumnSize).trim()
+        : "",
+    };
+  });
+}
+
+function normalizeWorksVideos(items) {
+  return Array.isArray(items)
+    ? items.map((video) => ({
+        id: String(video?.id || "").trim(),
+        title: String(video?.title || "").trim(),
+        date: String(video?.date || "").trim(),
+        type: video?.type === "short" ? "short" : "long",
+        category: String(video?.category || "").trim(),
+      })).filter((video) => video.id)
+    : [];
+}
+
 function normalizeLinkArray(items) {
   return Array.isArray(items)
     ? items.map((item) => ({
@@ -157,6 +262,189 @@ function normalizeLinkArray(items) {
         url: String(item?.url || item?.href || "").trim(),
       })).filter((item) => item.label || item.href || item.url)
     : [];
+}
+
+function normalizeHeroCareerMode(value) {
+  return ["structured", "simple", "freeform"].includes(value) ? value : "structured";
+}
+
+function normalizeHeroInfoLayoutPreset(value) {
+  return ["1:1", "2:1:1"].includes(String(value || "").trim()) ? String(value).trim() : "1:1";
+}
+
+function normalizeHeroCareerStructuredItems(items) {
+  return Array.isArray(items)
+    ? items.map((item) => ({
+        title: String(item?.title || "").trim(),
+        period: String(item?.period || "").trim(),
+        description: String(item?.description || "").trim(),
+      }))
+    : [];
+}
+
+function normalizeHeroCareerSimpleItems(items) {
+  return Array.isArray(items)
+    ? items.map((item) => ({
+        text: String(item?.text || "").trim(),
+        period: String(item?.period || "").trim(),
+      }))
+    : [];
+}
+
+function normalizeHeroLogoItems(items) {
+  return Array.isArray(items)
+    ? items.map((item) => ({
+        name: String(item?.name || "").trim(),
+        logoUrl: String(item?.logoUrl || "").trim(),
+        logoAlt: String(item?.logoAlt || "").trim(),
+      }))
+    : [];
+}
+
+function normalizeHeroInfoPanels(sourcePanels) {
+  const basePanels = clone(DEFAULT_DATA.hero.infoPanels);
+  const career = sourcePanels?.career || {};
+  const tools = sourcePanels?.tools || {};
+  const bgm = sourcePanels?.bgm || {};
+
+  return {
+    layoutPreset: normalizeHeroInfoLayoutPreset(sourcePanels?.layoutPreset ?? basePanels.layoutPreset),
+    career: {
+      ...basePanels.career,
+      ...career,
+      title: String(career.title ?? basePanels.career.title).trim() || basePanels.career.title,
+      mode: normalizeHeroCareerMode(career.mode),
+      structuredItems: normalizeHeroCareerStructuredItems(career.structuredItems),
+      simpleItems: normalizeHeroCareerSimpleItems(career.simpleItems),
+      freeformText: String(career.freeformText || "").trim(),
+    },
+    tools: {
+      ...basePanels.tools,
+      ...tools,
+      title: String(tools.title ?? basePanels.tools.title).trim() || basePanels.tools.title,
+      items: normalizeHeroLogoItems(tools.items),
+    },
+    bgm: {
+      ...basePanels.bgm,
+      ...bgm,
+      title: String(bgm.title ?? basePanels.bgm.title).trim() || basePanels.bgm.title,
+      items: normalizeHeroLogoItems(bgm.items),
+    },
+  };
+}
+
+function normalizeEnabled(value, fallback = true) {
+  if (value === undefined || value === null) return fallback;
+  return Boolean(value);
+}
+
+function normalizeCustomWorkBlock(block) {
+  return {
+    eyebrow: String(block?.eyebrow || "").trim(),
+    title: String(block?.title || "").trim(),
+    description: String(block?.description || "").trim(),
+    highlight: String(block?.highlight || "").trim(),
+    caption: String(block?.caption || "").trim(),
+    imageUrl: String(block?.imageUrl || "").trim(),
+    imageAlt: String(block?.imageAlt || "").trim(),
+  };
+}
+
+function hasCustomWorkContent(block) {
+  if (!block || typeof block !== "object") return false;
+  return [
+    block.eyebrow,
+    block.title,
+    block.description,
+    block.highlight,
+    block.caption,
+    block.imageUrl,
+    block.imageAlt,
+  ].some((value) => String(value || "").trim());
+}
+
+function normalizeCustomWorks(items, legacyItem) {
+  const normalizedItems = Array.isArray(items)
+    ? items.map((item) => normalizeCustomWorkBlock(item)).filter(hasCustomWorkContent)
+    : [];
+
+  if (normalizedItems.length) return normalizedItems;
+
+  const legacyBlock = normalizeCustomWorkBlock(legacyItem);
+  return hasCustomWorkContent(legacyBlock) ? [legacyBlock] : [];
+}
+
+function parseYouTubeUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return null;
+
+  const plainId = raw.match(/^[a-zA-Z0-9_-]{11}$/);
+  if (plainId) return { id: raw, type: "long" };
+
+  try {
+    const url = new URL(raw);
+    const host = url.hostname.replace(/^www\./, "");
+    const segments = url.pathname.split("/").filter(Boolean);
+    let id = "";
+    let type = "long";
+
+    if (host === "youtu.be") {
+      id = segments[0] || "";
+    } else if (host.endsWith("youtube.com")) {
+      if (url.searchParams.get("v")) {
+        id = url.searchParams.get("v") || "";
+      } else if (segments[0] === "shorts") {
+        id = segments[1] || "";
+        type = "short";
+      } else if (segments[0] === "embed") {
+        id = segments[1] || "";
+      }
+    }
+
+    id = id.split("?")[0].split("&")[0].trim();
+    if (!/^[a-zA-Z0-9_-]{11}$/.test(id)) return null;
+    return { id, type };
+  } catch (error) {
+    return null;
+  }
+}
+
+function isDirectVideoUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return false;
+
+  try {
+    const url = new URL(raw, window.location.href);
+    return /\.(mp4|webm|ogg|mov|m4v)$/i.test(url.pathname);
+  } catch (error) {
+    return /\.(mp4|webm|ogg|mov|m4v)(?:[?#].*)?$/i.test(raw);
+  }
+}
+
+function buildYouTubeEmbedUrl(videoId) {
+  return `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&mute=1&controls=0&loop=1&playlist=${encodeURIComponent(videoId)}&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1`;
+}
+
+function getHeroBackgroundMedia(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return { type: "none", src: "" };
+
+  const youtube = parseYouTubeUrl(raw);
+  if (youtube?.id) {
+    return {
+      type: "youtube",
+      src: buildYouTubeEmbedUrl(youtube.id),
+    };
+  }
+
+  if (isDirectVideoUrl(raw)) {
+    return {
+      type: "video",
+      src: raw,
+    };
+  }
+
+  return { type: "none", src: "" };
 }
 
 function normalizeData(input) {
@@ -180,6 +468,8 @@ function normalizeData(input) {
       footer: {
         ...clone(DEFAULT_DATA.site.footer),
         ...(source.site?.footer || {}),
+        enabled: normalizeEnabled(source.site?.footer?.enabled, DEFAULT_DATA.site.footer.enabled),
+        linksEnabled: normalizeEnabled(source.site?.footer?.linksEnabled, DEFAULT_DATA.site.footer.linksEnabled),
         links: normalizeLinkArray(source.site?.footer?.links),
       },
     },
@@ -193,10 +483,12 @@ function normalizeData(input) {
             variant: String(action?.variant || "primary").trim() || "primary",
           })).filter((action) => action.label || action.href)
         : [],
+      infoPanels: normalizeHeroInfoPanels(source.hero?.infoPanels),
     },
     projects: {
       ...clone(DEFAULT_DATA.projects),
       ...(source.projects || {}),
+      enabled: normalizeEnabled(source.projects?.enabled, DEFAULT_DATA.projects.enabled),
       cards: Array.isArray(source.projects?.cards)
         ? source.projects.cards.map((card) => ({
             layout: ["featured", "secondary", "small"].includes(card?.layout) ? card.layout : "small",
@@ -210,6 +502,7 @@ function normalizeData(input) {
         : [],
     },
     stats: {
+      enabled: normalizeEnabled(source.stats?.enabled, DEFAULT_DATA.stats.enabled),
       items: Array.isArray(source.stats?.items)
         ? source.stats.items.map((item) => ({
             value: String(item?.value || "").trim(),
@@ -220,19 +513,20 @@ function normalizeData(input) {
     works: {
       ...clone(DEFAULT_DATA.works),
       ...(source.works || {}),
-      videos: Array.isArray(source.works?.videos)
-        ? source.works.videos.map((video) => ({
-            id: String(video?.id || "").trim(),
-            title: String(video?.title || "").trim(),
-            date: String(video?.date || "").trim(),
-            type: video?.type === "short" ? "short" : "long",
-            category: String(video?.category || "").trim(),
-          })).filter((video) => video.id)
-        : [],
+      displayMode: normalizeWorksDisplayMode(source.works?.displayMode),
+      gridColumns: normalizeWorksColumnCount(source.works?.gridColumns, DEFAULT_DATA.works.gridColumns),
+      categoryStackColumns: normalizeWorksColumnCount(source.works?.categoryStackColumns, DEFAULT_DATA.works.categoryStackColumns),
+      categoryStackTypeFilterEnabled: normalizeEnabled(source.works?.categoryStackTypeFilterEnabled, DEFAULT_DATA.works.categoryStackTypeFilterEnabled),
+      categoryStackSingleColumnSize: normalizeWorksSingleColumnSize(source.works?.categoryStackSingleColumnSize),
+      videos: normalizeWorksVideos(source.works?.videos),
+      categoryOrder: normalizeWorksCategoryOrder(source.works?.categoryOrder, normalizeWorksVideos(source.works?.videos)),
+      categoryEntries: normalizeWorksCategoryEntries(source.works?.categoryEntries, normalizeWorksVideos(source.works?.videos), source.works?.categoryOrder),
     },
     pricing: {
       ...clone(DEFAULT_DATA.pricing),
       ...(source.pricing || {}),
+      customWorksEnabled: normalizeEnabled(source.pricing?.customWorksEnabled, DEFAULT_DATA.pricing.customWorksEnabled),
+      processEnabled: normalizeEnabled(source.pricing?.processEnabled, DEFAULT_DATA.pricing.processEnabled),
       plans: Array.isArray(source.pricing?.plans)
         ? source.pricing.plans.map((plan) => ({
             slug: String(plan?.slug || "").trim(),
@@ -248,13 +542,10 @@ function normalizeData(input) {
             cta: {
               label: String(plan?.cta?.label || "").trim(),
               href: String(plan?.cta?.href || "").trim(),
-            },
-          })).filter((plan) => plan.title || plan.price)
+          },
+        })).filter((plan) => plan.title || plan.price)
         : [],
-      customWork: {
-        ...clone(DEFAULT_DATA.pricing.customWork),
-        ...(source.pricing?.customWork || {}),
-      },
+      customWorks: normalizeCustomWorks(source.pricing?.customWorks, source.pricing?.customWork),
       processSteps: Array.isArray(source.pricing?.processSteps)
         ? source.pricing.processSteps.map((step) => ({
             number: String(step?.number || "").trim(),
@@ -316,8 +607,35 @@ function resolveHref(href) {
   return value;
 }
 
-function resolvePreviewAwareHref(href) {
+function getProjectsFallbackHash() {
+  return DATA.projects?.enabled === false ? "#works" : "#projects";
+}
+
+function rewriteProjectsHref(href) {
   const resolved = resolveHref(href);
+  if (!resolved || DATA.projects?.enabled !== false) return resolved;
+  if (resolved.startsWith("mailto:") || resolved.startsWith("tel:")) return resolved;
+  if (resolved.startsWith("#")) {
+    return resolved.toLowerCase() === "#projects" ? "#works" : resolved;
+  }
+  if (isExternalHref(resolved)) return resolved;
+
+  try {
+    const url = new URL(resolved, window.location.href);
+    if (url.origin !== window.location.origin) return resolved;
+    const lastSegment = url.pathname.split("/").filter(Boolean).pop() || "";
+    const page = !lastSegment || !lastSegment.includes(".") ? "index.html" : lastSegment.toLowerCase();
+    if (page !== "index.html" || String(url.hash || "").trim().toLowerCase() !== "#projects") {
+      return resolved;
+    }
+    return `index.html#works`;
+  } catch (error) {
+    return resolved;
+  }
+}
+
+function resolvePreviewAwareHref(href) {
+  const resolved = rewriteProjectsHref(href);
   if (!resolved || !isAdminPreview()) return resolved;
   if (resolved.startsWith("#") || resolved.startsWith("mailto:") || resolved.startsWith("tel:")) return resolved;
   if (isExternalHref(resolved)) return resolved;
@@ -480,12 +798,12 @@ function setDesktopNavActiveState(links, predicate) {
 
 function getIndexNavProgress() {
   const homeSection = document.getElementById("home");
-  const projectsSection = document.getElementById("projects");
-  if (!homeSection || !projectsSection) return null;
+  const targetSection = document.getElementById(DATA.projects?.enabled === false ? "works" : "projects");
+  if (!homeSection || !targetSection || targetSection.hidden) return null;
 
   const headerHeight = document.querySelector("header")?.offsetHeight || 0;
   const start = Math.max(homeSection.offsetTop, 0);
-  const end = Math.max(projectsSection.offsetTop - headerHeight - 24, start + 1);
+  const end = Math.max(targetSection.offsetTop - headerHeight - 24, start + 1);
   const scrollTop = window.scrollY || window.pageYOffset || 0;
   return clamp((scrollTop - start) / (end - start), 0, 1);
 }
@@ -505,24 +823,25 @@ function syncDesktopNavIndicator() {
   const activePage = currentPageName();
   const activeHash = currentHash();
   const homeLink = links.find((link) => link.dataset.targetPage === "index.html" && link.dataset.targetHash === "#home");
-  const projectsLink = links.find((link) => link.dataset.targetPage === "index.html" && link.dataset.targetHash === "#projects");
+  const transitionHash = getProjectsFallbackHash();
+  const targetLink = links.find((link) => link.dataset.targetPage === "index.html" && link.dataset.targetHash === transitionHash);
 
   let nextLeft = 0;
   let nextWidth = 0;
   let showIndicator = false;
 
-  if (activePage === "index.html" && homeLink && projectsLink) {
+  if (activePage === "index.html" && homeLink && targetLink) {
     const progress = getIndexNavProgress();
     if (progress !== null) {
       const homeMetrics = getLinkMetrics(homeLink, container);
-      const projectsMetrics = getLinkMetrics(projectsLink, container);
-      nextLeft = lerp(homeMetrics.left, projectsMetrics.left, progress);
-      nextWidth = lerp(homeMetrics.width, projectsMetrics.width, progress);
+      const targetMetrics = getLinkMetrics(targetLink, container);
+      nextLeft = lerp(homeMetrics.left, targetMetrics.left, progress);
+      nextWidth = lerp(homeMetrics.width, targetMetrics.width, progress);
       showIndicator = nextWidth > 0;
 
       setDesktopNavActiveState(links, (link) => {
         if (link === homeLink) return progress < 0.55;
-        if (link === projectsLink) return progress >= 0.55;
+        if (link === targetLink) return progress >= 0.55;
         const targetPage = String(link.dataset.targetPage || "").toLowerCase();
         const targetHash = String(link.dataset.targetHash || "").toLowerCase();
         if (!targetPage || targetPage !== activePage) return false;
@@ -569,6 +888,152 @@ function scheduleDesktopNavIndicatorSync() {
   navIndicatorFrame = window.requestAnimationFrame(syncDesktopNavIndicator);
 }
 
+function getHeroCareerActiveItems(panel) {
+  const mode = normalizeHeroCareerMode(panel?.mode);
+  if (mode === "simple") {
+    return (panel?.simpleItems || []).filter((item) => item.text || item.period);
+  }
+  if (mode === "freeform") {
+    return String(panel?.freeformText || "").trim();
+  }
+  return (panel?.structuredItems || []).filter((item) => item.title || item.period || item.description);
+}
+
+function getHeroLogoPanelItems(panel) {
+  return (panel?.items || []).filter((item) => item.name || item.logoUrl || item.logoAlt);
+}
+
+function hasHeroPanelContent(panelKey, panel) {
+  if (panelKey === "career") {
+    const active = getHeroCareerActiveItems(panel);
+    return Array.isArray(active) ? active.length > 0 : Boolean(active);
+  }
+  return getHeroLogoPanelItems(panel).length > 0;
+}
+
+function renderHeroCareerPanel(panel) {
+  const mode = normalizeHeroCareerMode(panel?.mode);
+
+  if (mode === "simple") {
+    const items = getHeroCareerActiveItems(panel);
+    return `
+      <ul class="hero-career-list">
+        ${items.map((item) => `
+          <li class="hero-career-item">
+            <div class="hero-career-head">
+              <span class="hero-career-text">${escapeHTML(item.text || "")}</span>
+              ${item.period ? `<span class="hero-career-period">${escapeHTML(item.period)}</span>` : ""}
+            </div>
+          </li>
+        `).join("")}
+      </ul>
+    `;
+  }
+
+  if (mode === "freeform") {
+    return `<div class="hero-career-freeform">${escapeHTML(String(panel?.freeformText || "")).replace(/\n/g, "<br>")}</div>`;
+  }
+
+  const items = getHeroCareerActiveItems(panel);
+  return `
+    <ul class="hero-career-list">
+      ${items.map((item) => `
+        <li class="hero-career-item">
+          <div class="hero-career-head">
+            <span class="hero-career-name">${escapeHTML(item.title || "")}</span>
+            ${item.period ? `<span class="hero-career-period">${escapeHTML(item.period)}</span>` : ""}
+          </div>
+          ${item.description ? `<div class="hero-career-description">${escapeHTML(item.description)}</div>` : ""}
+        </li>
+      `).join("")}
+    </ul>
+  `;
+}
+
+function renderHeroResourcePanel(panel) {
+  const items = getHeroLogoPanelItems(panel);
+  return `
+    <ul class="hero-resource-list">
+      ${items.map((item) => `
+        <li class="hero-resource-item">
+          ${item.logoUrl ? `
+            <span class="hero-resource-logo">
+              <img
+                src="${escapeHTML(item.logoUrl)}"
+                alt="${escapeHTML(item.logoAlt || item.name || "")}"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                onerror="this.parentElement.classList.add('is-hidden'); this.remove();">
+            </span>
+          ` : ""}
+          <span class="hero-resource-name">${escapeHTML(item.name || item.logoAlt || "항목")}</span>
+        </li>
+      `).join("")}
+    </ul>
+  `;
+}
+
+function renderHeroInfoCard(panelKey, panel) {
+  const body = panelKey === "career"
+    ? renderHeroCareerPanel(panel)
+    : renderHeroResourcePanel(panel);
+
+  return `
+    <article class="hero-info-card" data-panel="${escapeHTML(panelKey)}">
+      <h2 class="hero-info-card-title">${escapeHTML(panel.title || "")}</h2>
+      ${body}
+    </article>
+  `;
+}
+
+function renderHeroInfoPanels() {
+  const container = $("#hero-info-panels");
+  if (!container) return;
+
+  const infoPanels = DATA.hero?.infoPanels || DEFAULT_DATA.hero.infoPanels;
+  const layoutPreset = normalizeHeroInfoLayoutPreset(infoPanels.layoutPreset);
+  const visiblePanels = [
+    { key: "career", panel: infoPanels.career },
+    { key: "tools", panel: infoPanels.tools },
+    { key: "bgm", panel: infoPanels.bgm },
+  ].filter(({ key, panel }) => hasHeroPanelContent(key, panel));
+
+  if (!visiblePanels.length) {
+    container.hidden = true;
+    container.className = "hero-info-grid";
+    container.removeAttribute("data-count");
+    container.removeAttribute("data-layout-preset");
+    container.innerHTML = "";
+    return;
+  }
+
+  const hasSplitLayout = visiblePanels.length === 3
+    && visiblePanels.some(({ key }) => key === "career")
+    && visiblePanels.some(({ key }) => key === "tools")
+    && visiblePanels.some(({ key }) => key === "bgm");
+
+  if (hasSplitLayout) {
+    container.hidden = false;
+    container.className = "hero-info-grid is-split";
+    container.removeAttribute("data-count");
+    container.dataset.layoutPreset = layoutPreset;
+    container.innerHTML = `
+      ${renderHeroInfoCard("career", infoPanels.career)}
+      <div class="hero-info-stack">
+        ${renderHeroInfoCard("tools", infoPanels.tools)}
+        ${renderHeroInfoCard("bgm", infoPanels.bgm)}
+      </div>
+    `;
+    return;
+  }
+
+  container.hidden = false;
+  container.className = "hero-info-grid is-generic";
+  container.dataset.count = String(visiblePanels.length);
+  container.removeAttribute("data-layout-preset");
+  container.innerHTML = visiblePanels.map(({ key, panel }) => renderHeroInfoCard(key, panel)).join("");
+}
+
 function renderHero() {
   setText("hero-eyebrow", DATA.hero.eyebrow);
   const title = $("#hero-title");
@@ -594,20 +1059,39 @@ function renderHero() {
 
   const video = $("#hero-video");
   const source = $("#hero-video-source");
-  const videoUrl = String(DATA.hero.backgroundVideoUrl || "").trim();
+  const youtubeFrame = $("#hero-youtube");
+  const backgroundMedia = getHeroBackgroundMedia(DATA.hero.backgroundVideoUrl);
+
   if (video && source) {
-    if (videoUrl) {
-      source.src = videoUrl;
+    if (backgroundMedia.type === "video" && backgroundMedia.src) {
+      source.src = backgroundMedia.src;
       video.load();
       setHidden(video, false);
     } else {
       source.removeAttribute("src");
+      video.pause?.();
       setHidden(video, true);
     }
   }
+
+  if (youtubeFrame) {
+    if (backgroundMedia.type === "youtube" && backgroundMedia.src) {
+      youtubeFrame.src = backgroundMedia.src;
+      setHidden(youtubeFrame, false);
+    } else {
+      youtubeFrame.removeAttribute("src");
+      setHidden(youtubeFrame, true);
+    }
+  }
+
+  renderHeroInfoPanels();
 }
 
 function renderProjects() {
+  const section = $("#projects");
+  setHidden(section, DATA.projects.enabled === false);
+  if (DATA.projects.enabled === false) return;
+
   setText("projects-eyebrow", DATA.projects.sectionEyebrow);
   setText("projects-title", DATA.projects.sectionTitle);
   setText("projects-meta", DATA.projects.sectionMeta);
@@ -652,6 +1136,10 @@ function renderProjects() {
 }
 
 function renderStats() {
+  const section = $("#stats");
+  setHidden(section, DATA.stats.enabled === false);
+  if (DATA.stats.enabled === false) return;
+
   const grid = $("#stats-grid");
   if (!grid) return;
   grid.innerHTML = DATA.stats.items.map((item) => `
@@ -662,25 +1150,157 @@ function renderStats() {
   `).join("");
 }
 
+function renderWorksCard(video) {
+  const href = videoHref(video);
+  const metaParts = [];
+  if (video.category) metaParts.push(video.category);
+  if (video.date) metaParts.push(formatWorksDate(video.date));
+  const metaMarkup = metaParts.length
+    ? `<div class="works-card-meta">
+         ${metaParts.map((item) => `<span>${escapeHTML(item)}</span>`).join("")}
+       </div>`
+    : "";
+
+  return `
+    <a class="works-card" href="${escapeHTML(href)}" target="_blank" rel="noopener">
+      <div class="works-thumb">
+        <img src="${escapeHTML(videoThumb(video.id))}" alt="${escapeHTML(video.title || "영상 썸네일")}" loading="lazy" referrerpolicy="no-referrer">
+        <span class="works-type-badge" data-type="${escapeHTML(video.type)}">${escapeHTML(WORKS_TYPE_LABELS[video.type] || WORKS_TYPE_LABELS.long)}</span>
+      </div>
+      <div class="works-card-body">
+        <div class="works-card-title">${escapeHTML(video.title || "제목 미입력")}</div>
+        ${metaMarkup}
+      </div>
+    </a>
+  `;
+}
+
+function renderGridWorksFilters(categories, hasShortVideos) {
+  return `
+    <div class="works-filter-group" role="group" aria-label="타입 필터">
+      ${[
+        { key: "all", label: "전체" },
+        { key: "long", label: "롱폼" },
+        ...(hasShortVideos ? [{ key: "short", label: "숏폼" }] : []),
+      ].map((item) => `
+        <button
+          type="button"
+          class="works-filter-button ${worksFilterState.type === item.key ? "is-active" : ""}"
+          data-works-filter-type="${item.key}">
+          ${item.label}
+        </button>
+      `).join("")}
+    </div>
+    <div class="works-filter-divider" aria-hidden="true"></div>
+    <div class="works-filter-group" role="group" aria-label="카테고리 필터">
+      <button
+        type="button"
+        class="works-filter-button ${worksFilterState.category === "all" ? "is-active" : ""}"
+        data-works-filter-category="all">
+        전체 카테고리
+      </button>
+      ${categories.map((category) => `
+        <button
+          type="button"
+          class="works-filter-button ${worksFilterState.category === category ? "is-active" : ""}"
+          data-works-filter-category="${escapeHTML(category)}">
+          ${escapeHTML(category)}
+        </button>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderCategoryStackWorksFilters(hasShortVideos) {
+  return `
+    <div class="works-filter-group" role="group" aria-label="타입 필터">
+      ${[
+        { key: "all", label: "전체" },
+        { key: "long", label: "롱폼" },
+        ...(hasShortVideos ? [{ key: "short", label: "숏폼" }] : []),
+      ].map((item) => `
+        <button
+          type="button"
+          class="works-filter-button ${worksFilterState.type === item.key ? "is-active" : ""}"
+          data-works-filter-type="${item.key}">
+          ${item.label}
+        </button>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderWorksGrid(videos) {
+  return videos.map((video) => renderWorksCard(video)).join("");
+}
+
+function renderWorksCategoryStack(videos, categories, works) {
+  const columns = normalizeWorksColumnCount(works.categoryStackColumns, DEFAULT_DATA.works.categoryStackColumns);
+  const singleSize = normalizeWorksSingleColumnSize(works.categoryStackSingleColumnSize);
+  const categoryEntryMap = new Map(
+    normalizeWorksCategoryEntries(works.categoryEntries, works.videos, works.categoryOrder)
+      .map((entry) => [entry.category, entry]),
+  );
+
+  return `
+    <div class="works-category-stack">
+      ${categories.map((category) => {
+        const categoryVideos = videos
+          .filter((video) => video.category === category)
+          .slice()
+          .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+        const categoryEntry = categoryEntryMap.get(category) || { title: "", meta: "" };
+        const displayTitle = categoryEntry.title || category;
+        const resolvedColumns = Number.isInteger(categoryEntry.columns)
+          ? normalizeWorksColumnCount(categoryEntry.columns, columns)
+          : columns;
+        const resolvedSingleSize = categoryEntry.singleColumnSize
+          ? normalizeWorksSingleColumnSize(categoryEntry.singleColumnSize)
+          : singleSize;
+
+        if (!categoryVideos.length) return "";
+
+        return `
+          <section class="works-category-section">
+            <div class="works-category-heading">
+              <span class="works-category-kicker">Category</span>
+              <h3 class="works-category-title">${escapeHTML(displayTitle)}</h3>
+              ${categoryEntry.meta ? `<div class="works-category-subcopy">${escapeWithBreaks(categoryEntry.meta)}</div>` : ""}
+            </div>
+            <div class="works-category-grid" data-columns="${resolvedColumns}" data-single-size="${escapeHTML(resolvedSingleSize)}">
+              ${categoryVideos.map((video) => renderWorksCard(video)).join("")}
+            </div>
+          </section>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
 function renderWorks() {
   const section = $("#works");
   const title = $("#works-title");
   const description = $("#works-description");
   const filters = $("#works-filters");
+  const groups = $("#works-groups");
   const grid = $("#works-grid");
   const empty = $("#works-empty");
-  if (!section || !title || !description || !filters || !grid || !empty) return;
+  if (!section || !title || !description || !filters || !groups || !grid || !empty) return;
 
   const works = DATA.works || DEFAULT_DATA.works;
   const rawVideos = Array.isArray(works.videos) ? works.videos : [];
   const sectionTitle = String(works.sectionTitle || "").trim();
   const sectionDescription = String(works.sectionDescription || "").trim();
   const emptyText = String(works.emptyText || DEFAULT_DATA.works.emptyText || "").trim();
+  const displayMode = normalizeWorksDisplayMode(works.displayMode);
   const hasSectionContent = Boolean(sectionTitle || sectionDescription || rawVideos.length);
+  const hasShortVideos = rawVideos.some((video) => video.type === "short");
+  const categories = getOrderedWorksCategories(rawVideos, works.categoryOrder);
 
   setHidden(section, !hasSectionContent);
   if (!hasSectionContent) {
     grid.innerHTML = "";
+    groups.innerHTML = "";
     filters.innerHTML = "";
     empty.textContent = "";
     return;
@@ -690,90 +1310,161 @@ function renderWorks() {
   description.textContent = sectionDescription;
   setHidden(description, !sectionDescription);
 
-  const categories = getWorksCategories(rawVideos);
   if (!["all", "long", "short"].includes(worksFilterState.type)) {
+    worksFilterState.type = "all";
+  }
+  if (worksFilterState.type === "short" && !hasShortVideos) {
     worksFilterState.type = "all";
   }
   if (worksFilterState.category !== "all" && !categories.includes(worksFilterState.category)) {
     worksFilterState.category = "all";
   }
+  if (displayMode === "category-stack" && works.categoryStackTypeFilterEnabled === false) {
+    worksFilterState.type = "all";
+  }
 
   if (rawVideos.length) {
-    filters.hidden = false;
-    filters.innerHTML = `
-      <div class="works-filter-group" role="group" aria-label="타입 필터">
-        ${[
-          { key: "all", label: "전체" },
-          { key: "long", label: "롱폼" },
-          { key: "short", label: "숏폼" },
-        ].map((item) => `
-          <button
-            type="button"
-            class="works-filter-button ${worksFilterState.type === item.key ? "is-active" : ""}"
-            data-works-filter-type="${item.key}">
-            ${item.label}
-          </button>
-        `).join("")}
-      </div>
-      <div class="works-filter-divider" aria-hidden="true"></div>
-      <div class="works-filter-group" role="group" aria-label="카테고리 필터">
-        <button
-          type="button"
-          class="works-filter-button ${worksFilterState.category === "all" ? "is-active" : ""}"
-          data-works-filter-category="all">
-          전체 카테고리
-        </button>
-        ${categories.map((category) => `
-          <button
-            type="button"
-            class="works-filter-button ${worksFilterState.category === category ? "is-active" : ""}"
-            data-works-filter-category="${escapeHTML(category)}">
-            ${escapeHTML(category)}
-          </button>
-        `).join("")}
-      </div>
-    `;
+    if (displayMode === "category-stack") {
+      if (works.categoryStackTypeFilterEnabled) {
+        filters.hidden = false;
+        filters.innerHTML = renderCategoryStackWorksFilters(hasShortVideos);
+      } else {
+        filters.hidden = true;
+        filters.innerHTML = "";
+      }
+    } else {
+      filters.hidden = false;
+      filters.innerHTML = renderGridWorksFilters(categories, hasShortVideos);
+    }
   } else {
     filters.hidden = true;
     filters.innerHTML = "";
   }
 
-  const filtered = rawVideos
+  const filteredByType = rawVideos
     .filter((video) => worksFilterState.type === "all" || video.type === worksFilterState.type)
-    .filter((video) => worksFilterState.category === "all" || video.category === worksFilterState.category)
     .slice()
     .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 
-  if (!filtered.length) {
+  const visibleVideos = displayMode === "category-stack"
+    ? filteredByType
+    : filteredByType.filter((video) => worksFilterState.category === "all" || video.category === worksFilterState.category);
+
+  if (!visibleVideos.length) {
     grid.innerHTML = "";
+    groups.innerHTML = "";
+    setHidden(grid, true);
+    setHidden(groups, true);
     empty.textContent = emptyText || "해당 조건의 영상이 없습니다.";
     empty.hidden = false;
     return;
   }
 
   empty.hidden = true;
-  grid.innerHTML = filtered.map((video) => {
-    const href = videoHref(video);
-    const metaParts = [];
-    if (video.category) metaParts.push(video.category);
-    if (video.date) metaParts.push(formatWorksDate(video.date));
-    const metaMarkup = metaParts.length
-      ? `<div class="works-card-meta">
-           ${metaParts.map((item) => `<span>${escapeHTML(item)}</span>`).join("")}
-         </div>`
-      : "";
+
+  if (displayMode === "category-stack") {
+    groups.innerHTML = renderWorksCategoryStack(visibleVideos, categories, works);
+    grid.innerHTML = "";
+    setHidden(groups, false);
+    setHidden(grid, true);
+    return;
+  }
+
+  grid.dataset.columns = String(normalizeWorksColumnCount(works.gridColumns, DEFAULT_DATA.works.gridColumns));
+  grid.innerHTML = renderWorksGrid(visibleVideos);
+  groups.innerHTML = "";
+  setHidden(grid, false);
+  setHidden(groups, true);
+}
+
+function getProcessGridRowSizes(count) {
+  const presets = {
+    1: [1],
+    2: [2],
+    3: [3],
+    4: [4],
+    5: [3, 2],
+    6: [3, 3],
+    7: [4, 3],
+    8: [4, 4],
+    9: [3, 3, 3],
+    10: [4, 4, 2],
+    11: [4, 4, 3],
+    12: [4, 4, 4],
+  };
+
+  if (presets[count]) return presets[count];
+
+  const rows = [];
+  let remaining = count;
+  while (remaining > 0) {
+    const next = Math.min(4, remaining);
+    rows.push(next);
+    remaining -= next;
+  }
+  return rows;
+}
+
+function chunkProcessSteps(steps) {
+  const rowSizes = getProcessGridRowSizes(steps.length);
+  const rows = [];
+  let offset = 0;
+
+  rowSizes.forEach((size) => {
+    rows.push(steps.slice(offset, offset + size));
+    offset += size;
+  });
+
+  return rows;
+}
+
+function renderProcessGrid(steps) {
+  const visibleSteps = (Array.isArray(steps) ? steps : []).filter((step) => step.number || step.title || step.description);
+  if (!visibleSteps.length) return "";
+
+  return chunkProcessSteps(visibleSteps).map((row) => `
+    <div class="process-grid-row" data-columns="${row.length}">
+      ${row.map((step) => `
+        <article class="process-step-card">
+          <div class="process-step-number">${escapeHTML(step.number)}</div>
+          <h4 class="process-step-title">${escapeHTML(step.title)}</h4>
+          <p class="process-step-copy">${escapeHTML(step.description)}</p>
+        </article>
+      `).join("")}
+    </div>
+  `).join("");
+}
+
+function renderCustomWorkBlocks(blocks) {
+  const visibleBlocks = (Array.isArray(blocks) ? blocks : []).filter(hasCustomWorkContent);
+  if (!visibleBlocks.length) return "";
+
+  return visibleBlocks.map((block, index) => {
+    const direction = index % 2 === 1 ? "media-first" : "text-first";
+    const caption = block.caption || block.title;
 
     return `
-      <a class="works-card" href="${escapeHTML(href)}" target="_blank" rel="noopener">
-        <div class="works-thumb">
-          <img src="${escapeHTML(videoThumb(video.id))}" alt="${escapeHTML(video.title || "영상 썸네일")}" loading="lazy" referrerpolicy="no-referrer">
-          <span class="works-type-badge" data-type="${escapeHTML(video.type)}">${escapeHTML(WORKS_TYPE_LABELS[video.type] || WORKS_TYPE_LABELS.long)}</span>
-        </div>
-        <div class="works-card-body">
-          <div class="works-card-title">${escapeHTML(video.title || "제목 미입력")}</div>
-          ${metaMarkup}
-        </div>
-      </a>
+      <article class="custom-work-block" data-direction="${direction}">
+        <section class="custom-work-copy">
+          <h2 class="custom-work-title">${escapeHTML(block.title)}</h2>
+          <p class="custom-work-description">${escapeHTML(block.description)}</p>
+          <div class="custom-work-divider">
+            <span class="custom-work-highlight">${escapeHTML(block.highlight)}</span>
+            <span class="custom-work-line" aria-hidden="true"></span>
+          </div>
+        </section>
+
+        <section class="custom-work-media">
+          ${block.imageUrl
+            ? `<img class="custom-work-image" alt="${escapeHTML(block.imageAlt || block.title || "")}" src="${escapeHTML(block.imageUrl)}">`
+            : '<div class="custom-work-placeholder">이미지를 입력하면 이 영역에 표시됩니다.</div>'}
+          <div class="custom-work-media-overlay"></div>
+          <div class="custom-work-caption-wrap">
+            <div class="custom-work-eyebrow">${escapeHTML(block.eyebrow)}</div>
+            <div class="custom-work-caption">${escapeHTML(caption)}</div>
+          </div>
+        </section>
+      </article>
     `;
   }).join("");
 }
@@ -822,38 +1513,24 @@ function renderPricing() {
     }).join("");
   }
 
-  setText("custom-work-title", DATA.pricing.customWork.title);
-  setText("custom-work-description", DATA.pricing.customWork.description);
-  setText("custom-work-highlight", DATA.pricing.customWork.highlight);
-  setText("custom-work-eyebrow", DATA.pricing.customWork.eyebrow);
-  setText("custom-work-caption", DATA.pricing.customWork.caption || DATA.pricing.customWork.title);
-
-  const customMedia = $("#custom-work-media");
-  const customImage = $("#custom-work-image");
-  if (customMedia && customImage) {
-    if (DATA.pricing.customWork.imageUrl) {
-      customImage.src = DATA.pricing.customWork.imageUrl;
-      customImage.alt = DATA.pricing.customWork.imageAlt || DATA.pricing.customWork.title || "";
-      setHidden(customMedia, false);
-    } else {
-      customImage.removeAttribute("src");
-      setHidden(customMedia, true);
-    }
+  const customWorksSection = $("#custom-works-section");
+  const customWorksList = $("#custom-works-list");
+  const customWorks = (DATA.pricing.customWorks || []).filter(hasCustomWorkContent);
+  const showCustomWorks = DATA.pricing.customWorksEnabled !== false && customWorks.length > 0;
+  setHidden(customWorksSection, !showCustomWorks);
+  if (customWorksList) {
+    customWorksList.innerHTML = showCustomWorks ? renderCustomWorkBlocks(customWorks) : "";
   }
 
   setText("process-title", DATA.pricing.processTitle);
   const processGrid = $("#process-grid");
   const processSection = $("#process-section");
   if (processGrid) {
-    processGrid.innerHTML = DATA.pricing.processSteps.map((step) => `
-      <article class="space-y-4">
-        <div class="text-2xl font-black text-primary-container opacity-30">${escapeHTML(step.number)}</div>
-        <h4 class="font-bold">${escapeHTML(step.title)}</h4>
-        <p class="text-xs leading-relaxed text-on-surface-variant">${escapeHTML(step.description)}</p>
-      </article>
-    `).join("");
+    processGrid.innerHTML = renderProcessGrid(DATA.pricing.processSteps);
   }
-  setHidden(processSection, DATA.pricing.processSteps.length === 0 && !DATA.pricing.processTitle);
+  const hasProcessContent = (DATA.pricing.processSteps || []).some((step) => step.number || step.title || step.description)
+    || Boolean(DATA.pricing.processTitle);
+  setHidden(processSection, DATA.pricing.processEnabled === false || !hasProcessContent);
 }
 
 function renderContact() {
@@ -907,6 +1584,10 @@ function renderContact() {
 }
 
 function renderFooter() {
+  const footer = document.querySelector("footer");
+  setHidden(footer, DATA.site.footer.enabled === false);
+  if (DATA.site.footer.enabled === false) return;
+
   setText("footer-title", DATA.site.footer.title);
   setText("footer-copy", DATA.site.footer.copy);
 
@@ -918,7 +1599,7 @@ function renderFooter() {
       const external = isExternalHref(href) ? ' target="_blank" rel="noopener"' : "";
       return `<a href="${escapeHTML(href)}" class="text-xs uppercase tracking-[0.2em] text-[#cec6ad] transition-colors hover:text-[#FDE047]"${external}>${escapeHTML(link.label)}</a>`;
     }).join("");
-    setHidden(links, items.length === 0);
+    setHidden(links, DATA.site.footer.linksEnabled === false || items.length === 0);
   }
 }
 

@@ -10,7 +10,13 @@ const previewTargets = {
   },
   hero: {
     title: "히어로 미리보기",
-    description: "홈 첫 화면의 핵심 히어로 구성만 바로 확인할 수 있습니다.",
+    description: "홈 첫 화면의 상단 히어로 카피와 액션 구성을 바로 확인할 수 있습니다.",
+    pathText: "index.html#home",
+    openHref: "../index.html#home",
+  },
+  "hero-panels": {
+    title: "경력사항 / 툴 / BGM ",
+    description: "경력사항 / 사용 가능한 툴 / BGM 카드 구성을 바로 확인합니다.",
     pathText: "index.html#home",
     openHref: "../index.html#home",
   },
@@ -67,6 +73,8 @@ const DEFAULT_DATA = {
       ctaHref: "contact.html",
     },
     footer: {
+      enabled: true,
+      linksEnabled: true,
       title: "STUDIO JINYEONG",
       copy: "",
       links: [],
@@ -81,20 +89,47 @@ const DEFAULT_DATA = {
     statusLabel: "",
     statusText: "",
     actions: [],
+    infoPanels: {
+      layoutPreset: "1:1",
+      career: {
+        title: "경력사항",
+        mode: "structured",
+        structuredItems: [],
+        simpleItems: [],
+        freeformText: "",
+      },
+      tools: {
+        title: "사용 가능한 툴",
+        items: [],
+      },
+      bgm: {
+        title: "BGM 사용 툴",
+        items: [],
+      },
+    },
   },
   projects: {
+    enabled: true,
     sectionEyebrow: "",
     sectionTitle: "",
     sectionMeta: "",
     cards: [],
   },
   stats: {
+    enabled: true,
     items: [],
   },
   works: {
     sectionTitle: "영상 포트폴리오",
     sectionDescription: "",
     emptyText: "해당 조건의 영상이 없습니다.",
+    displayMode: "grid",
+    gridColumns: 3,
+    categoryStackColumns: 2,
+    categoryStackTypeFilterEnabled: false,
+    categoryStackSingleColumnSize: "medium",
+    categoryOrder: [],
+    categoryEntries: [],
     videos: [],
   },
   pricing: {
@@ -102,15 +137,9 @@ const DEFAULT_DATA = {
     title: "",
     description: "",
     plans: [],
-    customWork: {
-      eyebrow: "",
-      title: "",
-      description: "",
-      highlight: "",
-      caption: "",
-      imageUrl: "",
-      imageAlt: "",
-    },
+    customWorksEnabled: true,
+    customWorks: [],
+    processEnabled: true,
     processTitle: "",
     processSteps: [],
   },
@@ -157,6 +186,10 @@ const DIRECT_BINDINGS = {
   "hero-description": ["hero", "description"],
   "hero-status-label": ["hero", "statusLabel"],
   "hero-status-text": ["hero", "statusText"],
+  "hero-career-title": ["hero", "infoPanels", "career", "title"],
+  "hero-tools-title": ["hero", "infoPanels", "tools", "title"],
+  "hero-bgm-title": ["hero", "infoPanels", "bgm", "title"],
+  "hero-career-freeform": ["hero", "infoPanels", "career", "freeformText"],
   "projects-eyebrow": ["projects", "sectionEyebrow"],
   "projects-title": ["projects", "sectionTitle"],
   "projects-meta": ["projects", "sectionMeta"],
@@ -164,13 +197,6 @@ const DIRECT_BINDINGS = {
   "pricing-title": ["pricing", "title"],
   "pricing-description": ["pricing", "description"],
   "pricing-process-title": ["pricing", "processTitle"],
-  "custom-eyebrow": ["pricing", "customWork", "eyebrow"],
-  "custom-title": ["pricing", "customWork", "title"],
-  "custom-description": ["pricing", "customWork", "description"],
-  "custom-highlight": ["pricing", "customWork", "highlight"],
-  "custom-caption": ["pricing", "customWork", "caption"],
-  "custom-image-url": ["pricing", "customWork", "imageUrl"],
-  "custom-image-alt": ["pricing", "customWork", "imageAlt"],
   "contact-eyebrow": ["contact", "eyebrow"],
   "contact-title": ["contact", "title"],
   "contact-title-accent": ["contact", "titleAccent"],
@@ -184,6 +210,123 @@ const DIRECT_BINDINGS = {
   "footer-copy": ["site", "footer", "copy"],
   "free-content-input": ["freeContent"],
 };
+
+const CHECKBOX_BINDINGS = {
+  "projects-enabled": ["projects", "enabled"],
+  "stats-enabled": ["stats", "enabled"],
+  "pricing-process-enabled": ["pricing", "processEnabled"],
+  "pricing-custom-works-enabled": ["pricing", "customWorksEnabled"],
+  "footer-enabled": ["site", "footer", "enabled"],
+  "footer-links-enabled": ["site", "footer", "linksEnabled"],
+};
+
+const HERO_TOOL_PRESETS = Object.freeze({
+  "premiere-pro": {
+    name: "Premiere Pro",
+    logoUrl: "https://i.namu.wiki/i/Ij7VsOqUO-M0A1wkmGU3M3lL98IoQjm1_WWSaaKf3bThbZ5iml-pY3Totigp0p-IjbzTQ0sAGPqMxjugufdZUA.svg",
+    logoAlt: "Premiere Pro logo",
+  },
+  "after-effects": {
+    name: "After Effects",
+    logoUrl: "https://i.namu.wiki/i/5ffo6UVBxthL_LEs62YVBnlFXkWaHSJ3H827dYMXrYbSS2DvU9LKJ4J26vv0s9qkQtfuGiBf92xtvhrxnILI6w.svg",
+    logoAlt: "After Effects logo",
+  },
+  "photoshop": {
+    name: "Photoshop",
+    logoUrl: "https://i.namu.wiki/i/utkZKZsqgX2lN8bVgT6iAhkVQgGSTVlpzhqXPf0ATuiqYpEGq6rhGq2SPMElqlrngMTowqBLd8ywzgv4VpKdHg.svg",
+    logoAlt: "Photoshop logo",
+  },
+  "illustrator": {
+    name: "Illustrator",
+    logoUrl: "https://i.namu.wiki/i/HmMUGgd5edIAGWNHV-n8dn2Hz5gXLT7MhvtJI7ODQWEkqQa4U1AugsKgQ2VhxeFXhftf3W2w1b8-hCgf3U1iYQ.svg",
+    logoAlt: "Illustrator logo",
+  },
+  "lightroom": {
+    name: "Lightroom",
+    logoUrl: "https://i.namu.wiki/i/SBo3OFGdz8GIufgSI5H_RFGDaS9JKHSneRtpTDVRbTs8N42ducnUETlRaeWRypsQUOBtO8FN3gbXEBm5EE8sPvofA3oNBdTDljEo9kR9nBW6j_QlUjhQZloau_2sNFE2IDgrd_2DBEeFagHYGQBlXw.svg",
+    logoAlt: "Lightroom logo",
+  },
+  "animate": {
+    name: "Animate",
+    logoUrl: "https://i.namu.wiki/i/94mx5IKH4gtk37eko8wznmpj-BFTX9wRi7ele5UYLcASJ2dKmJMT3by_r_hmxpLHyFsGaSt3NzQ9Gu8UpRiyKWAuGuPdt7jg_4l6BTsgjVW7FMtdaQ12DaeYVIYdrJjT60iZ-YVsmud1149EtTuvUg.svg",
+    logoAlt: "Animate logo",
+  },
+  "premiere-rush": {
+    name: "Premiere Rush",
+    logoUrl: "https://i.namu.wiki/i/nSfsFM97VdDSUA40t1KLpz6vsmLwUsALoz9GCDatWzIRfefsOuWyex94lM4WOlcq3UJpljOlQ0VAeVcpXwg-3l4nthz8qcIyfDS41eIgSenkzUs8NuhxYndEdTdpTbnswUTMxpKXV_u_ASPuKFCX6w.svg",
+    logoAlt: "Premiere Rush logo",
+  },
+  "indesign": {
+    name: "InDesign",
+    logoUrl: "https://i.namu.wiki/i/SjtqPHViHH2gl6ACRQnrLzFRLMiR5kWEU3oq9f0s4o5YG12JrTmXGWYrUrAJCa5j5giqlDCPOiSnsOCmwQrSPA.svg",
+    logoAlt: "InDesign logo",
+  },
+  "incopy": {
+    name: "InCopy",
+    logoUrl: "https://i.namu.wiki/i/rNlmiB6U0mwpi_ssjugc6t_mbR8CmEoPU1p3iZ3185aJGYBv0R4x31IjmMzEHcEeaQJqETM2BVb3CmyXx-_Nj4ygLnqIZL3wy6F6arPOQjTeLgGKXsfPE_lDx9F2e3Y2FAE-Z7bP9-ng43VXIfe1zQ.svg",
+    logoAlt: "InCopy logo",
+  },
+  "dreamweaver": {
+    name: "Dreamweaver",
+    logoUrl: "https://i.namu.wiki/i/Gxlvull9tBNWUhPsqy_mwy4wlG6rCckVUVihcf6nZXDSoJHaM411kK-1WZJD3omkuwbuoKyAcIC3PfskKY2Kr2dEO6zzQstnTh6mEWO45FZFB_9j-A7nTDo4Ee6-SMDUKP1js8M3B5gDIHYpUQt_sw.svg",
+    logoAlt: "Dreamweaver logo",
+  },
+  "audition": {
+    name: "Audition",
+    logoUrl: "https://i.namu.wiki/i/dysDKKEZIXg038nVn2tIe-w9PCpp__Mj4vTQANmQAT0IlKE1xPbvXThxF4lT-wI7bdUHYAMYpvX29T1rnPCN2YwcODzE8eVyzU6klZO7tm7PtroHOBU2X6ztQuV34lzum6M_EiADS5oCCz2rSFrKvA.svg",
+    logoAlt: "Audition logo",
+  },
+  "media-encoder": {
+    name: "Media Encoder",
+    logoUrl: "https://i.namu.wiki/i/HkalKwy8kRBZKQu3orl3utL_Hw10wRB92sJoKV_Ln1yUISyo6CSJIN-HDNZAXRV6o3jUC6gCZDZqD2DPe12ZECUQKraE9NRWkqjBjI-2nsLHx00oHeR6mf9MYr5zS6gOOXpfR2LLokb6umQcwrLlvQ.svg",
+    logoAlt: "Media Encoder logo",
+  },
+  "stock": {
+    name: "Stock",
+    logoUrl: "https://i.namu.wiki/i/7pmsZxnnSd6w5jjvpHQmQGH0Wqbtg_RzqX6FfOYH4912v6ngDsziw3SdcJdzVP31uGjO8iHuc2RUaSZKLA3u2vvW1hG4Ee-qsTCukduoRIjfnDB-djPOEnSd2PWdmVrdxVHfWA29qazJG9I30JZiHg.svg",
+    logoAlt: "Adobe Stock logo",
+  },
+  "bridge": {
+    name: "Bridge",
+    logoUrl: "https://i.namu.wiki/i/Jz8v1tcKDRNm8iJEg8asNVKbHnouPJwgEJuslOaisiGhnCBcj1Wm_RjDkl4ZcASqWe4HtMolE1YLzrkVfGLknaMrESLyeGrrXKe3WWWSvIPZN3VABQjM4xgilfltIscaOELryf5yqpG6v5B8NIf0ug.svg",
+    logoAlt: "Bridge logo",
+  },
+  "spark": {
+    name: "Spark",
+    logoUrl: "https://i.namu.wiki/i/9r5GeEmRlU06naGxsAXYE6NhqE7JcYGEM2bh9TCkaJwoIZaUa3cFE5K9LIb9eK4cjnzUWvZUjd0YwOrnZvMrF-m-c5YI3NQV1Fb6Ts48hFD8Xhhzu3KNkfvRZqE9jT3hTEcsH3xwF0ceuJ-RlTr2rw.webp",
+    logoAlt: "Spark logo",
+  },
+  "xd": {
+    name: "XD",
+    logoUrl: "https://i.namu.wiki/i/4Qs0FJdevgJhU7y8ztgAvp6k8RBFv14sVvzwS6OuVvWYRyPiH1EmfKhnakueue-ByR0p2Uc2mY8snbhd9dXgl4uNDP1dgFjdOuGyfmLicCx6kM_WWM1jDRSOuptpmfd9YofS6ffJ--t0yr2qakejMw.svg",
+    logoAlt: "Adobe XD logo",
+  },
+  "dimension": {
+    name: "Dimension",
+    logoUrl: "https://i.namu.wiki/i/rduwglHk4mPcp6EyhEDmUOs8uTmNGBTuXLzfQVWzUgKu0yNppv-o0caYzsz9zvg5YDtM5wOEPZm5pMcpmBN7dEBxwbBPKC0Wws-tt9BjdobTgkTaSa7bpvi6h2o5mq7KXEAa3IiLabiefkYOIGI2Xw.svg",
+    logoAlt: "Dimension logo",
+  },
+  "character-animator": {
+    name: "Character Animator",
+    logoUrl: "https://i.namu.wiki/i/kenevJANs_D4YTHjgIA7fi3JOlFVaB7Mt1C0OQSsHjkHSG_qZ-m0lb5zGb7Or81tJre1N7TvA0f18uDT5dFlwvUKWyaTt6ptS054E-L7CKtGxZvgD_aCSwC4HVCBuzlvSswm4jTz4ji8KYZDjJGJVQ.svg",
+    logoAlt: "Character Animator logo",
+  },
+  "fresco": {
+    name: "Fresco",
+    logoUrl: "https://i.namu.wiki/i/jd4JGhe13yHCtGADaCpN5h4Y3ExYcwqzmhbKCrtR__7uSg6pHBnzsa_2ex-3pryu7dV-xhYSHP7YImmrtN6MCX2amwR7VU-sf_pldQwD-ALn4en9eThdQJnj6-QiY-LsVXGUL1Hcyv2CaekbhfU-_Q.svg",
+    logoAlt: "Fresco logo",
+  },
+  "aero": {
+    name: "Aero",
+    logoUrl: "https://i.namu.wiki/i/CzrLsJrHhqCzsB-y7k8Pq02D7RV7ZvbmssvLWhckMWyIYws0QUPqqGE_SZSWLG4dXZiKzf2jKdjUnvpbq6RGrUvYNa2Uy9iZafxc99yTpdZUvCvWDzRaxEqK-SpW0cZ-O-pusPvbd0Wf1alwXQ5FCA.webp",
+    logoAlt: "Aero logo",
+  },
+  "firefly": {
+    name: "Firefly",
+    logoUrl: "https://i.namu.wiki/i/jG0lHgs5mA8zq6QEO9Yafbdoh7EFqbMgTDqxOOtfTZ7vMfa1kcD8g59slnrOPkOYyqUQRnqqD0-gy4Py_RH_Pg.svg",
+    logoAlt: "Firefly logo",
+  },
+});
 
 function $(selector) {
   return document.querySelector(selector);
@@ -277,6 +420,269 @@ function normalizeFooterLinks(items) {
         url: String(item?.url || item?.href || "").trim(),
       })).filter((item) => item.label || item.url)
     : [];
+}
+
+function normalizeHeroCareerMode(value) {
+  return ["structured", "simple", "freeform"].includes(value) ? value : "structured";
+}
+
+function normalizeHeroInfoLayoutPreset(value) {
+  return ["1:1", "2:1:1"].includes(String(value || "").trim()) ? String(value).trim() : "1:1";
+}
+
+function normalizeHeroCareerStructuredItems(items) {
+  return Array.isArray(items)
+    ? items.map((item) => ({
+        title: String(item?.title || "").trim(),
+        period: String(item?.period || "").trim(),
+        description: String(item?.description || "").trim(),
+      }))
+    : [];
+}
+
+function normalizeHeroCareerSimpleItems(items) {
+  return Array.isArray(items)
+    ? items.map((item) => ({
+        text: String(item?.text || "").trim(),
+        period: String(item?.period || "").trim(),
+      }))
+    : [];
+}
+
+function normalizeHeroLogoItems(items) {
+  return Array.isArray(items)
+    ? items.map((item) => ({
+        name: String(item?.name || "").trim(),
+        logoUrl: String(item?.logoUrl || "").trim(),
+        logoAlt: String(item?.logoAlt || "").trim(),
+      }))
+    : [];
+}
+
+function normalizeHeroInfoPanels(sourcePanels) {
+  const basePanels = clone(DEFAULT_DATA.hero.infoPanels);
+  const career = sourcePanels?.career || {};
+  const tools = sourcePanels?.tools || {};
+  const bgm = sourcePanels?.bgm || {};
+
+  return {
+    layoutPreset: normalizeHeroInfoLayoutPreset(sourcePanels?.layoutPreset ?? basePanels.layoutPreset),
+    career: {
+      ...basePanels.career,
+      ...career,
+      title: String(career.title ?? basePanels.career.title).trim() || basePanels.career.title,
+      mode: normalizeHeroCareerMode(career.mode),
+      structuredItems: normalizeHeroCareerStructuredItems(career.structuredItems),
+      simpleItems: normalizeHeroCareerSimpleItems(career.simpleItems),
+      freeformText: String(career.freeformText || ""),
+    },
+    tools: {
+      ...basePanels.tools,
+      ...tools,
+      title: String(tools.title ?? basePanels.tools.title).trim() || basePanels.tools.title,
+      items: normalizeHeroLogoItems(tools.items),
+    },
+    bgm: {
+      ...basePanels.bgm,
+      ...bgm,
+      title: String(bgm.title ?? basePanels.bgm.title).trim() || basePanels.bgm.title,
+      items: normalizeHeroLogoItems(bgm.items),
+    },
+  };
+}
+
+function normalizeEnabled(value, fallback = true) {
+  if (value === undefined || value === null) return fallback;
+  return Boolean(value);
+}
+
+function normalizeCustomWorkBlock(block) {
+  return {
+    eyebrow: String(block?.eyebrow || "").trim(),
+    title: String(block?.title || "").trim(),
+    description: String(block?.description || "").trim(),
+    highlight: String(block?.highlight || "").trim(),
+    caption: String(block?.caption || "").trim(),
+    imageUrl: String(block?.imageUrl || "").trim(),
+    imageAlt: String(block?.imageAlt || "").trim(),
+  };
+}
+
+function hasCustomWorkContent(block) {
+  if (!block || typeof block !== "object") return false;
+  return [
+    block.eyebrow,
+    block.title,
+    block.description,
+    block.highlight,
+    block.caption,
+    block.imageUrl,
+    block.imageAlt,
+  ].some((value) => String(value || "").trim());
+}
+
+function normalizeCustomWorks(items, legacyItem) {
+  const normalizedItems = Array.isArray(items)
+    ? items.map((item) => normalizeCustomWorkBlock(item)).filter(hasCustomWorkContent)
+    : [];
+
+  if (normalizedItems.length) return normalizedItems;
+
+  const legacyBlock = normalizeCustomWorkBlock(legacyItem);
+  return hasCustomWorkContent(legacyBlock) ? [legacyBlock] : [];
+}
+
+function isDirectVideoUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return false;
+
+  try {
+    const url = new URL(raw, window.location.href);
+    return /\.(mp4|webm|ogg|mov|m4v)$/i.test(url.pathname);
+  } catch (error) {
+    return /\.(mp4|webm|ogg|mov|m4v)(?:[?#].*)?$/i.test(raw);
+  }
+}
+
+function buildYouTubeEmbedUrl(videoId) {
+  return `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&mute=1&controls=0&loop=1&playlist=${encodeURIComponent(videoId)}&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1`;
+}
+
+function getHeroBackgroundMedia(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return { type: "none", src: "" };
+
+  const youtube = parseYouTubeUrl(raw);
+  if (youtube?.id) {
+    return {
+      type: "youtube",
+      src: buildYouTubeEmbedUrl(youtube.id),
+    };
+  }
+
+  if (isDirectVideoUrl(raw)) {
+    return {
+      type: "video",
+      src: raw,
+    };
+  }
+
+  return { type: "none", src: "" };
+}
+
+function getProjectsFallbackHash() {
+  return state.data.projects?.enabled === false ? "#works" : "#projects";
+}
+
+function previewHiddenBlock(message) {
+  return `<div class="preview-hidden-block">${escapeHTML(message)}</div>`;
+}
+
+function getProcessGridRowSizes(count) {
+  const presets = {
+    1: [1],
+    2: [2],
+    3: [3],
+    4: [4],
+    5: [3, 2],
+    6: [3, 3],
+    7: [4, 3],
+    8: [4, 4],
+    9: [3, 3, 3],
+    10: [4, 4, 2],
+    11: [4, 4, 3],
+    12: [4, 4, 4],
+  };
+
+  if (presets[count]) return presets[count];
+
+  const rows = [];
+  let remaining = count;
+  while (remaining > 0) {
+    const next = Math.min(4, remaining);
+    rows.push(next);
+    remaining -= next;
+  }
+  return rows;
+}
+
+function chunkProcessSteps(steps) {
+  const rowSizes = getProcessGridRowSizes(steps.length);
+  const rows = [];
+  let offset = 0;
+
+  rowSizes.forEach((size) => {
+    rows.push(steps.slice(offset, offset + size));
+    offset += size;
+  });
+
+  return rows;
+}
+
+function normalizeWorksDisplayMode(value) {
+  return value === "category-stack" ? "category-stack" : "grid";
+}
+
+function normalizeWorksColumnCount(value, fallback) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 8 ? parsed : fallback;
+}
+
+function normalizeWorksSingleColumnSize(value) {
+  return ["large", "medium", "small"].includes(String(value || "").trim())
+    ? String(value).trim()
+    : "medium";
+}
+
+function normalizeWorksCategoryOrder(items, videos) {
+  const detected = getWorksCategories(videos);
+  const seen = new Set();
+  const preserved = (Array.isArray(items) ? items : [])
+    .map((item) => String(item || "").trim())
+    .filter((item) => {
+      if (!item || seen.has(item) || !detected.includes(item)) return false;
+      seen.add(item);
+      return true;
+    });
+  const newCategories = detected.filter((category) => !seen.has(category));
+  return [...newCategories, ...preserved];
+}
+
+function getOrderedWorksCategories(videos = state.data.works?.videos, order = state.data.works?.categoryOrder) {
+  return normalizeWorksCategoryOrder(order, videos);
+}
+
+function normalizeWorksCategoryEntries(items, videos, order) {
+  const categories = getOrderedWorksCategories(videos, order);
+  const entryMap = new Map(
+    (Array.isArray(items) ? items : [])
+      .map((item) => ({
+        category: String(item?.category || "").trim(),
+        title: String(item?.title || "").trim(),
+        meta: String(item?.meta || item?.description || "").trim(),
+        columns: Number.isInteger(Number(item?.columns)) ? Number(item.columns) : null,
+        singleColumnSize: ["large", "medium", "small"].includes(String(item?.singleColumnSize || "").trim())
+          ? String(item.singleColumnSize).trim()
+          : "",
+      }))
+      .filter((item) => item.category)
+      .map((item) => [item.category, item]),
+  );
+
+  return categories.map((category) => {
+    const entry = entryMap.get(category);
+    return {
+      category,
+      title: String(entry?.title || "").trim(),
+      meta: String(entry?.meta || "").trim(),
+      columns: Number.isInteger(Number(entry?.columns)) && Number(entry.columns) >= 1 && Number(entry.columns) <= 8
+        ? Number(entry.columns)
+        : null,
+      singleColumnSize: ["large", "medium", "small"].includes(String(entry?.singleColumnSize || "").trim())
+        ? String(entry.singleColumnSize).trim()
+        : "",
+    };
+  });
 }
 
 function normalizeWorksVideos(items) {
@@ -379,13 +785,14 @@ function getWorksFormCategoryValue() {
 function renderWorksCategoryOptions(selected = getWorksFormCategoryValue()) {
   const select = $("#works-video-category");
   if (!select) return;
+  const categories = getOrderedWorksCategories();
 
-  const options = getWorksCategories().map((category) => `
+  const options = categories.map((category) => `
     <option value="${escapeHTML(category)}">${escapeHTML(category)}</option>
   `).join("");
 
   select.innerHTML = `<option value="__new__">새 카테고리 작성</option>${options}`;
-  if (selected && getWorksCategories().includes(selected)) {
+  if (selected && categories.includes(selected)) {
     select.value = selected;
   } else {
     select.value = "__new__";
@@ -638,6 +1045,8 @@ function normalizeData(input) {
       footer: {
         ...base.site.footer,
         ...(source.site?.footer || {}),
+        enabled: normalizeEnabled(source.site?.footer?.enabled, base.site.footer.enabled),
+        linksEnabled: normalizeEnabled(source.site?.footer?.linksEnabled, base.site.footer.linksEnabled),
         links: normalizeFooterLinks(source.site?.footer?.links),
       },
     },
@@ -651,10 +1060,12 @@ function normalizeData(input) {
             variant: String(action?.variant || "primary").trim() || "primary",
           })).filter((action) => action.label || action.href)
         : [],
+      infoPanels: normalizeHeroInfoPanels(source.hero?.infoPanels),
     },
     projects: {
       ...base.projects,
       ...(source.projects || {}),
+      enabled: normalizeEnabled(source.projects?.enabled, base.projects.enabled),
       cards: Array.isArray(source.projects?.cards)
         ? source.projects.cards.map((card) => ({
             layout: ["featured", "secondary", "small"].includes(card?.layout) ? card.layout : "small",
@@ -668,6 +1079,7 @@ function normalizeData(input) {
         : [],
     },
     stats: {
+      enabled: normalizeEnabled(source.stats?.enabled, base.stats.enabled),
       items: Array.isArray(source.stats?.items)
         ? source.stats.items.map((item) => ({
             value: String(item?.value || "").trim(),
@@ -676,14 +1088,22 @@ function normalizeData(input) {
         : [],
     },
     works: {
-      sectionTitle: base.works.sectionTitle,
-      sectionDescription: base.works.sectionDescription,
-      emptyText: base.works.emptyText,
+      ...base.works,
+      ...(source.works || {}),
+      displayMode: normalizeWorksDisplayMode(source.works?.displayMode),
+      gridColumns: normalizeWorksColumnCount(source.works?.gridColumns, base.works.gridColumns),
+      categoryStackColumns: normalizeWorksColumnCount(source.works?.categoryStackColumns, base.works.categoryStackColumns),
+      categoryStackTypeFilterEnabled: normalizeEnabled(source.works?.categoryStackTypeFilterEnabled, base.works.categoryStackTypeFilterEnabled),
+      categoryStackSingleColumnSize: normalizeWorksSingleColumnSize(source.works?.categoryStackSingleColumnSize),
       videos: normalizeWorksVideos(source.works?.videos),
+      categoryOrder: normalizeWorksCategoryOrder(source.works?.categoryOrder, normalizeWorksVideos(source.works?.videos)),
+      categoryEntries: normalizeWorksCategoryEntries(source.works?.categoryEntries, normalizeWorksVideos(source.works?.videos), source.works?.categoryOrder),
     },
     pricing: {
       ...base.pricing,
       ...(source.pricing || {}),
+      customWorksEnabled: normalizeEnabled(source.pricing?.customWorksEnabled, base.pricing.customWorksEnabled),
+      processEnabled: normalizeEnabled(source.pricing?.processEnabled, base.pricing.processEnabled),
       plans: Array.isArray(source.pricing?.plans)
         ? source.pricing.plans.map((plan) => ({
             slug: String(plan?.slug || "").trim(),
@@ -699,13 +1119,10 @@ function normalizeData(input) {
             cta: {
               label: String(plan?.cta?.label || "").trim(),
               href: String(plan?.cta?.href || "").trim(),
-            },
-          })).filter((plan) => plan.title || plan.price || plan.description)
+          },
+        })).filter((plan) => plan.title || plan.price || plan.description)
         : [],
-      customWork: {
-        ...base.pricing.customWork,
-        ...(source.pricing?.customWork || {}),
-      },
+      customWorks: normalizeCustomWorks(source.pricing?.customWorks, source.pricing?.customWork),
       processSteps: Array.isArray(source.pricing?.processSteps)
         ? source.pricing.processSteps.map((step) => ({
             number: String(step?.number || "").trim(),
@@ -779,7 +1196,18 @@ function mountLivePreview() {
 }
 
 function previewConfigForTab(tab = state.activeTab) {
-  return previewTargets[tab] || previewTargets.brand;
+  const config = previewTargets[tab] || previewTargets.brand;
+  if (tab !== "projects") return config;
+
+  if (state.data.projects.enabled === false) {
+    return {
+      ...config,
+      pathText: "index.html#works",
+      openHref: "../index.html#works",
+    };
+  }
+
+  return config;
 }
 
 function renderPreviewAccentText(text, accent, accentClass) {
@@ -821,6 +1249,138 @@ function renderPreviewHeroActions() {
   `).join("");
 }
 
+function getPreviewHeroCareerActiveContent(panel) {
+  const mode = normalizeHeroCareerMode(panel?.mode);
+  if (mode === "simple") {
+    return (panel?.simpleItems || []).filter((item) => item.text || item.period);
+  }
+  if (mode === "freeform") {
+    return String(panel?.freeformText || "").trim();
+  }
+  return (panel?.structuredItems || []).filter((item) => item.title || item.period || item.description);
+}
+
+function getPreviewHeroLogoItems(panel) {
+  return (panel?.items || []).filter((item) => item.name || item.logoUrl || item.logoAlt);
+}
+
+function hasPreviewHeroPanelContent(panelKey, panel) {
+  if (panelKey === "career") {
+    const activeContent = getPreviewHeroCareerActiveContent(panel);
+    return Array.isArray(activeContent) ? activeContent.length > 0 : Boolean(activeContent);
+  }
+  return getPreviewHeroLogoItems(panel).length > 0;
+}
+
+function renderPreviewHeroCareerBody(panel) {
+  const mode = normalizeHeroCareerMode(panel?.mode);
+
+  if (mode === "simple") {
+    const items = getPreviewHeroCareerActiveContent(panel);
+    return `
+      <div class="grid gap-4">
+        ${items.map((item) => `
+          <div class="border-b border-white/10 pb-4 last:border-b-0 last:pb-0">
+            <div class="flex flex-wrap items-baseline justify-between gap-3">
+              <span class="hero-preview-entry-title text-white">${escapeHTML(item.text || "")}</span>
+              ${item.period ? `<span class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#fde047]">${escapeHTML(item.period)}</span>` : ""}
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  if (mode === "freeform") {
+    return `<div class="hero-preview-freeform text-[#cec6ad]">${escapeWithBreaks(panel?.freeformText || "")}</div>`;
+  }
+
+  const items = getPreviewHeroCareerActiveContent(panel);
+  return `
+    <div class="grid gap-4">
+      ${items.map((item) => `
+        <div class="border-b border-white/10 pb-4 last:border-b-0 last:pb-0">
+          <div class="flex flex-wrap items-baseline justify-between gap-3">
+            <span class="hero-preview-entry-title text-white">${escapeHTML(item.title || "")}</span>
+            ${item.period ? `<span class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#fde047]">${escapeHTML(item.period)}</span>` : ""}
+          </div>
+          ${item.description ? `<div class="hero-preview-entry-copy mt-2 text-[#cec6ad]">${escapeHTML(item.description)}</div>` : ""}
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderPreviewHeroResourceBody(panel) {
+  const items = getPreviewHeroLogoItems(panel);
+  return `
+    <div class="grid gap-4">
+      ${items.map((item) => `
+        <div class="flex items-center gap-3 min-w-0">
+          ${item.logoUrl ? `
+            <span class="hero-preview-resource-logo">
+              <img
+                alt="${escapeHTML(item.logoAlt || item.name || "")}"
+                src="${escapeHTML(item.logoUrl)}"
+                referrerpolicy="no-referrer"
+                onerror="this.parentElement.style.display='none'; this.remove();">
+            </span>
+          ` : ""}
+          <span class="hero-preview-resource-name min-w-0 break-words text-[#f4ffff]">${escapeHTML(item.name || item.logoAlt || "항목")}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderPreviewHeroInfoCard(panelKey, panel) {
+  const body = panelKey === "career"
+    ? renderPreviewHeroCareerBody(panel)
+    : renderPreviewHeroResourceBody(panel);
+
+  return `
+    <article class="hero-preview-info-card min-w-0 rounded-[1.5rem] border border-white/10 bg-[#1e1c12]/80 p-6 backdrop-blur-sm" data-panel="${escapeHTML(panelKey)}">
+      <div class="mb-4 text-2xl font-extrabold tracking-tight text-white">${escapeHTML(panel.title || "")}</div>
+      ${body}
+    </article>
+  `;
+}
+
+function renderPreviewHeroInfoPanels() {
+  const infoPanels = state.data.hero.infoPanels || DEFAULT_DATA.hero.infoPanels;
+  const layoutPreset = normalizeHeroInfoLayoutPreset(infoPanels.layoutPreset);
+  const visiblePanels = [
+    { key: "career", panel: infoPanels.career },
+    { key: "tools", panel: infoPanels.tools },
+    { key: "bgm", panel: infoPanels.bgm },
+  ].filter(({ key, panel }) => hasPreviewHeroPanelContent(key, panel));
+
+  if (!visiblePanels.length) return "";
+
+  const hasSplitLayout = visiblePanels.length === 3
+    && visiblePanels.some(({ key }) => key === "career")
+    && visiblePanels.some(({ key }) => key === "tools")
+    && visiblePanels.some(({ key }) => key === "bgm");
+
+  if (hasSplitLayout) {
+    return `
+      <div class="hero-preview-info-grid is-split" data-layout-preset="${escapeHTML(layoutPreset)}">
+        ${renderPreviewHeroInfoCard("career", infoPanels.career)}
+        <div class="hero-preview-info-stack">
+          ${renderPreviewHeroInfoCard("tools", infoPanels.tools)}
+          ${renderPreviewHeroInfoCard("bgm", infoPanels.bgm)}
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="hero-preview-info-grid is-generic" data-count="${visiblePanels.length}">
+      ${visiblePanels.map(({ key, panel }) => renderPreviewHeroInfoCard(key, panel)).join("")}
+    </div>
+  `;
+}
+
 function renderPreviewStatsItems() {
   const items = state.data.stats.items.filter((item) => item.value || item.label);
   if (!items.length) {
@@ -835,12 +1395,47 @@ function renderPreviewStatsItems() {
   `).join("");
 }
 
-function renderPreviewWorksFilters() {
-  const categories = getWorksCategories();
+function renderPreviewWorksCard(video, options = {}) {
+  const metaParts = [];
+  if (video.category) metaParts.push(video.category);
+  if (video.date) metaParts.push(formatDisplayDate(video.date));
+  const metaMarkup = metaParts.length
+    ? `<div class="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-[#97917a]">
+         ${metaParts.map((item) => `<span>${escapeHTML(item)}</span>`).join("")}
+       </div>`
+    : "";
+  const mediaStyle = options.mediaHeight
+    ? `height:${options.mediaHeight};`
+    : "aspect-ratio:16 / 9;";
+
+  return `
+    <article class="overflow-hidden rounded-2xl border border-white/10 bg-[#1e1c12]">
+      <div class="relative overflow-hidden bg-[#2d2a1f]" style="${mediaStyle}">
+        <img class="h-full w-full object-cover" alt="${escapeHTML(video.title || "영상 썸네일")}" src="${escapeHTML(videoThumb(video.id))}" referrerpolicy="no-referrer">
+        <span class="absolute right-4 top-4 rounded-full border ${video.type === "short" ? "border-[#3bf7ff]/30 text-[#8ffcff]" : "border-[#fde047]/30 text-[#fde047]"} bg-[#16130a]/85 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em]">${escapeHTML(video.type === "short" ? "숏폼" : "롱폼")}</span>
+      </div>
+      <div class="grid gap-3 p-5">
+        <div class="text-lg font-bold leading-snug tracking-tight text-white">${escapeHTML(textOrFallback(video.title, "제목 미입력"))}</div>
+        ${metaMarkup}
+      </div>
+    </article>
+  `;
+}
+
+function getPreviewWorksSingleColumnCardWidth(singleSize) {
+  const size = normalizeWorksSingleColumnSize(singleSize);
+  if (size === "small") return "min(100%, calc((100% - 3rem) / 3))";
+  if (size === "medium") return "min(100%, calc((100% - 1.5rem) / 2))";
+  return "100%";
+}
+
+function renderPreviewGridWorksFilters(categories, hasShortVideos) {
   const chips = [
     '<span class="rounded-full border border-[#fde047]/30 bg-[#fde047]/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#fde047]">전체</span>',
     '<span class="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#cec6ad]">롱폼</span>',
-    '<span class="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#cec6ad]">숏폼</span>',
+    ...(hasShortVideos
+      ? ['<span class="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#cec6ad]">숏폼</span>']
+      : []),
   ];
 
   const categoryChips = [
@@ -859,54 +1454,146 @@ function renderPreviewWorksFilters() {
   `;
 }
 
-function renderPreviewWorksCards() {
-  const videos = getSortedWorksVideos();
+function renderPreviewCategoryStackWorksFilters(hasShortVideos) {
+  return `
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="rounded-full border border-[#fde047]/30 bg-[#fde047]/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#fde047]">전체</span>
+      <span class="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#cec6ad]">롱폼</span>
+      ${hasShortVideos ? '<span class="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#cec6ad]">숏폼</span>' : ""}
+    </div>
+  `;
+}
+
+function renderPreviewWorksGrid(videos, columns) {
   if (!videos.length) {
     return `
-      <div class="rounded-2xl border border-dashed border-white/10 px-6 py-8 text-center text-sm font-medium text-[#8b8577] md:col-span-3">
+      <div class="rounded-2xl border border-dashed border-white/10 px-6 py-8 text-center text-sm font-medium text-[#8b8577]">
         ${escapeHTML(textOrFallback(state.data.works.emptyText, "해당 조건의 영상이 없습니다."))}
       </div>
     `;
   }
 
-  return videos.map((video) => {
-    const metaParts = [];
-    if (video.category) metaParts.push(video.category);
-    if (video.date) metaParts.push(formatDisplayDate(video.date));
-    const metaMarkup = metaParts.length
-      ? `<div class="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-[#97917a]">
-           ${metaParts.map((item) => `<span>${escapeHTML(item)}</span>`).join("")}
-         </div>`
-      : "";
+  const safeColumns = normalizeWorksColumnCount(columns, DEFAULT_DATA.works.gridColumns);
 
+  return `
+    <div class="grid gap-6" style="grid-template-columns:repeat(${safeColumns}, minmax(0, 1fr));">
+      ${videos.map((video) => renderPreviewWorksCard(video)).join("")}
+    </div>
+  `;
+}
+
+function renderPreviewWorksCategoryStack(videos, categories, works) {
+  const safeColumns = normalizeWorksColumnCount(works.categoryStackColumns, DEFAULT_DATA.works.categoryStackColumns);
+  const singleSize = normalizeWorksSingleColumnSize(works.categoryStackSingleColumnSize);
+  const categoryEntryMap = new Map(
+    normalizeWorksCategoryEntries(works.categoryEntries, works.videos, works.categoryOrder)
+      .map((entry) => [entry.category, entry]),
+  );
+
+  if (!videos.length) {
     return `
-      <article class="overflow-hidden rounded-2xl border border-white/10 bg-[#1e1c12]">
-        <div class="relative aspect-video overflow-hidden bg-[#2d2a1f]">
-          <img class="h-full w-full object-cover" alt="${escapeHTML(video.title || "영상 썸네일")}" src="${escapeHTML(videoThumb(video.id))}" referrerpolicy="no-referrer">
-          <span class="absolute right-4 top-4 rounded-full border ${video.type === "short" ? "border-[#3bf7ff]/30 text-[#8ffcff]" : "border-[#fde047]/30 text-[#fde047]"} bg-[#16130a]/85 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em]">${escapeHTML(video.type === "short" ? "숏폼" : "롱폼")}</span>
-        </div>
-        <div class="grid gap-3 p-5">
-          <div class="text-2xl font-bold tracking-tight text-white">${escapeHTML(textOrFallback(video.title, "제목 미입력"))}</div>
-          ${metaMarkup}
-        </div>
-      </article>
+      <div class="rounded-2xl border border-dashed border-white/10 px-6 py-8 text-center text-sm font-medium text-[#8b8577]">
+        ${escapeHTML(textOrFallback(state.data.works.emptyText, "해당 조건의 영상이 없습니다."))}
+      </div>
     `;
-  }).join("");
+  }
+
+  return `
+    <div class="grid gap-12">
+      ${categories.map((category) => {
+        const categoryVideos = videos
+          .filter((video) => video.category === category)
+          .slice()
+          .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+        const categoryEntry = categoryEntryMap.get(category) || { title: "", meta: "" };
+        const displayTitle = categoryEntry.title || category;
+        const resolvedColumns = Number.isInteger(categoryEntry.columns)
+          ? normalizeWorksColumnCount(categoryEntry.columns, safeColumns)
+          : safeColumns;
+        const resolvedSingleSize = categoryEntry.singleColumnSize
+          ? normalizeWorksSingleColumnSize(categoryEntry.singleColumnSize)
+          : singleSize;
+        const cardWidth = resolvedColumns === 1 ? getPreviewWorksSingleColumnCardWidth(resolvedSingleSize) : "100%";
+
+        if (!categoryVideos.length) return "";
+
+        return `
+          <section class="grid gap-5">
+            <div class="grid gap-2 border-b border-white/10 pb-4">
+              <span class="text-[11px] font-black uppercase tracking-[0.22em] text-[#97917a]">Category</span>
+              <h3 class="mb-0 text-3xl font-black tracking-tight text-white">${escapeHTML(displayTitle)}</h3>
+              ${categoryEntry.meta ? `<div class="text-[12px] leading-relaxed text-[#cec6ad]">${escapeWithBreaks(categoryEntry.meta)}</div>` : ""}
+            </div>
+            <div class="grid gap-6" style="grid-template-columns:repeat(${resolvedColumns}, minmax(0, 1fr));${resolvedColumns === 1 ? "justify-items:center;" : ""}">
+              ${categoryVideos.map((video) => `
+                <div style="width:${cardWidth};max-width:100%;">
+                  ${renderPreviewWorksCard(video)}
+                </div>
+              `).join("")}
+            </div>
+          </section>
+        `;
+      }).join("")}
+    </div>
+  `;
 }
 
 function renderPreviewProcessSteps() {
   const steps = state.data.pricing.processSteps.filter((step) => step.number || step.title || step.description);
   if (!steps.length) {
-    return '<div class="rounded-2xl border border-dashed border-white/10 px-6 py-8 text-center text-sm font-medium text-[#8b8577]">프로세스 단계를 추가하면 이곳에 표시됩니다.</div>';
+    return previewHiddenBlock("프로세스 단계를 추가하면 이곳에 표시됩니다.");
   }
 
-  return steps.map((step) => `
-    <article class="space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-      <div class="text-2xl font-black text-[#fde047] opacity-40">${escapeHTML(textOrFallback(step.number, "00"))}</div>
-      <div class="font-bold text-white">${escapeHTML(textOrFallback(step.title, "프로세스 제목"))}</div>
-      <div class="text-xs leading-relaxed text-[#cec6ad]">${escapeHTML(textOrFallback(step.description, "프로세스 설명이 이곳에 표시됩니다."))}</div>
-    </article>
+  return chunkProcessSteps(steps).map((row) => `
+    <div class="grid gap-4 mx-auto w-full" style="${row.length === 1 ? "max-width:18rem;grid-template-columns:repeat(1,minmax(0,1fr));" : ""}${row.length === 2 ? "max-width:38rem;grid-template-columns:repeat(2,minmax(0,1fr));" : ""}${row.length === 3 ? "max-width:58rem;grid-template-columns:repeat(3,minmax(0,1fr));" : ""}${row.length >= 4 ? "max-width:100%;grid-template-columns:repeat(4,minmax(0,1fr));" : ""}">
+      ${row.map((step) => `
+        <article class="grid gap-4 min-w-0">
+          <div class="text-2xl font-black text-[#fde047] opacity-40">${escapeHTML(textOrFallback(step.number, "00"))}</div>
+          <div class="font-bold text-white">${escapeHTML(textOrFallback(step.title, "프로세스 제목"))}</div>
+          <div class="text-xs leading-relaxed text-[#cec6ad]">${escapeHTML(textOrFallback(step.description, "프로세스 설명이 이곳에 표시됩니다."))}</div>
+        </article>
+      `).join("")}
+    </div>
   `).join("");
+}
+
+function renderPreviewCustomWorks() {
+  const blocks = (state.data.pricing.customWorks || []).filter(hasCustomWorkContent);
+  if (!blocks.length) {
+    return previewHiddenBlock("커스텀 작업 블록을 추가하면 이곳에 표시됩니다.");
+  }
+
+  return blocks.map((block, index) => {
+    const mediaFirst = index % 2 === 1;
+    const textSection = `
+      <section class="flex flex-col justify-center bg-[#1e1c12] p-10">
+        <div class="mb-6 text-3xl font-bold text-white">${escapeHTML(textOrFallback(block.title, "커스텀 작업 제목"))}</div>
+        <div class="mb-8 leading-relaxed text-[#cec6ad]">${escapeHTML(textOrFallback(block.description, "커스텀 작업 설명이 이곳에 표시됩니다."))}</div>
+        <div class="flex items-center gap-4">
+          <span class="text-xl font-black italic tracking-tight text-[#fde047]">${escapeHTML(textOrFallback(block.highlight, "FAST & ACCURATE"))}</span>
+          <span class="h-px flex-1 bg-white/10"></span>
+        </div>
+      </section>
+    `;
+    const mediaSection = `
+      <section class="relative min-h-[280px] overflow-hidden bg-[#2d2a1f]">
+        ${block.imageUrl
+          ? `<img class="h-full w-full object-cover grayscale" alt="${escapeHTML(block.imageAlt || block.title || "")}" src="${escapeHTML(block.imageUrl)}">`
+          : '<div class="flex h-full min-h-[280px] items-center justify-center text-sm font-medium text-[#8b8577]">커스텀 작업 이미지를 입력하면 이 영역에 표시됩니다.</div>'}
+        <div class="absolute inset-0 bg-gradient-to-t from-[#16130a] to-transparent opacity-70"></div>
+        <div class="absolute bottom-8 left-8 right-8">
+          <div class="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-[#fde047]">${escapeHTML(textOrFallback(block.eyebrow, "Studio Quality"))}</div>
+          <div class="text-2xl font-bold text-white">${escapeHTML(textOrFallback(block.caption || block.title, "압도적인 퀄리티의 비결"))}</div>
+        </div>
+      </section>
+    `;
+
+    return `
+      <div class="grid gap-6 md:grid-cols-2">
+        ${mediaFirst ? `${mediaSection}${textSection}` : `${textSection}${mediaSection}`}
+      </div>
+    `;
+  }).join("");
 }
 
 function renderPreviewProjectCards() {
@@ -1011,28 +1698,39 @@ function buildBrandPreview() {
 }
 
 function buildHeroPreview() {
+  const backgroundMedia = getHeroBackgroundMedia(state.data.hero.backgroundVideoUrl);
+  const backgroundMarkup = backgroundMedia.type === "youtube"
+    ? `<iframe class="absolute inset-0 h-full w-full border-0 pointer-events-none" style="transform:scale(1.28);transform-origin:center;" title="Hero background video" allow="autoplay; encrypted-media; picture-in-picture" src="${escapeHTML(backgroundMedia.src)}"></iframe>`
+    : backgroundMedia.type === "video"
+      ? `<video class="absolute inset-0 h-full w-full object-cover" autoplay loop muted playsinline><source src="${escapeHTML(backgroundMedia.src)}"></video>`
+      : "";
+
   return `
     <section class="preview-render-root relative overflow-hidden bg-[#16130a] text-[#e9e2d2]" style="font-family:'Epilogue', sans-serif;">
+      ${backgroundMarkup}
       <div class="absolute inset-0" style="background:linear-gradient(to bottom, rgba(22, 19, 10, 0.32), rgba(22, 19, 10, 0.72), rgba(22, 19, 10, 0.98));"></div>
       <div class="relative mx-auto flex h-full max-w-screen-2xl items-start px-6 pt-16 pb-16 md:px-8 md:pt-24">
-        <div class="flex w-full flex-col gap-12 md:flex-row md:justify-between md:gap-16">
-          <div class="max-w-4xl">
-            <span class="mb-5 block text-xs font-bold uppercase tracking-[0.3em] text-[#fde047]">${escapeHTML(textOrFallback(state.data.hero.eyebrow, "VIDEO EDITORIAL PORTFOLIO"))}</span>
-            <div class="text-5xl font-black leading-[0.95] text-white md:text-7xl">${renderPreviewAccentText(textOrFallback(state.data.hero.title, "영상으로\n이야기를 만듭니다."), state.data.hero.titleAccent, "text-[#FDE047]")}</div>
-            <div class="mt-8 max-w-2xl rounded-xl border border-white/10 bg-[#16130a]/30 p-4 text-base font-medium leading-relaxed text-[#cec6ad] backdrop-blur-sm md:text-lg">${escapeWithBreaks(textOrFallback(state.data.hero.description, "히어로 설명을 입력하면 이 영역에 반영됩니다."))}</div>
-            <div class="mt-8 flex flex-wrap gap-4">
-              ${renderPreviewHeroActions()}
+        <div class="flex w-full flex-col gap-10">
+          <div class="flex w-full flex-col gap-12 md:flex-row md:justify-between md:gap-16">
+            <div class="max-w-4xl">
+              <span class="mb-5 block text-xs font-bold uppercase tracking-[0.3em] text-[#fde047]">${escapeHTML(textOrFallback(state.data.hero.eyebrow, "VIDEO EDITORIAL PORTFOLIO"))}</span>
+              <div class="text-5xl font-black leading-[0.95] text-white md:text-7xl">${renderPreviewAccentText(textOrFallback(state.data.hero.title, "영상으로\n이야기를 만듭니다."), state.data.hero.titleAccent, "text-[#FDE047]")}</div>
+              <div class="mt-8 max-w-2xl rounded-xl border border-white/10 bg-[#16130a]/30 p-4 text-base font-medium leading-relaxed text-[#cec6ad] backdrop-blur-sm md:text-lg">${escapeWithBreaks(textOrFallback(state.data.hero.description, "히어로 설명을 입력하면 이 영역에 반영됩니다."))}</div>
+              <div class="mt-8 flex flex-wrap gap-4">
+                ${renderPreviewHeroActions()}
+              </div>
             </div>
-          </div>
-          <div class="hidden lg:block">
-            <div class="flex flex-col items-end gap-2 text-right">
-              <span class="text-[10px] uppercase tracking-[0.2em] text-[#cec6ad]">${escapeHTML(textOrFallback(state.data.hero.statusLabel, "Status"))}</span>
-              <div class="flex items-center gap-2">
-                <span class="h-2 w-2 rounded-full bg-[#3bf7ff]"></span>
-                <span class="text-xs font-bold text-white">${escapeHTML(textOrFallback(state.data.hero.statusText, "AVAILABLE FOR NEW PROJECTS"))}</span>
+            <div class="hidden lg:block">
+              <div class="flex flex-col items-end gap-2 text-right">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#cec6ad]">${escapeHTML(textOrFallback(state.data.hero.statusLabel, "Status"))}</span>
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full bg-[#3bf7ff]"></span>
+                  <span class="text-xs font-bold text-white">${escapeHTML(textOrFallback(state.data.hero.statusText, "AVAILABLE FOR NEW PROJECTS"))}</span>
+                </div>
               </div>
             </div>
           </div>
+          ${renderPreviewHeroInfoPanels()}
         </div>
       </div>
     </section>
@@ -1040,6 +1738,14 @@ function buildHeroPreview() {
 }
 
 function buildProjectsPreview() {
+  if (state.data.projects.enabled === false) {
+    return `
+      <section class="preview-render-root bg-[#16130a] px-6 py-16 text-[#e9e2d2] md:px-8" style="font-family:'Epilogue', sans-serif;">
+        <div class="mx-auto max-w-screen-2xl">${previewHiddenBlock("프로젝트 섹션이 꺼져 있습니다. 내부 작업물 링크는 영상 포트폴리오로 이동합니다.")}</div>
+      </section>
+    `;
+  }
+
   return `
     <section class="preview-render-root bg-[#16130a] px-6 py-16 text-[#e9e2d2] md:px-8" style="font-family:'Epilogue', sans-serif;">
       <div class="mx-auto max-w-screen-2xl">
@@ -1059,6 +1765,14 @@ function buildProjectsPreview() {
 }
 
 function buildStatsPreview() {
+  if (state.data.stats.enabled === false) {
+    return `
+      <section class="preview-render-root bg-[#16130a] px-6 py-14 text-[#e9e2d2] md:px-8" style="font-family:'Epilogue', sans-serif;">
+        <div class="mx-auto max-w-screen-2xl">${previewHiddenBlock("통계 섹션이 꺼져 있습니다.")}</div>
+      </section>
+    `;
+  }
+
   return `
     <section class="preview-render-root bg-[#16130a] px-6 py-14 text-[#e9e2d2] md:px-8" style="font-family:'Epilogue', sans-serif;">
       <div id="stats" class="mx-auto max-w-screen-2xl border-t border-white/10 pt-10">
@@ -1071,8 +1785,22 @@ function buildStatsPreview() {
 }
 
 function buildWorksPreview() {
+  const works = state.data.works || DEFAULT_DATA.works;
   const description = String(state.data.works.sectionDescription || "").trim();
-  const hasVideos = state.data.works.videos.length > 0;
+  const videos = getSortedWorksVideos(state.data.works.videos);
+  const categories = getOrderedWorksCategories(videos, works.categoryOrder);
+  const hasVideos = videos.length > 0;
+  const hasShortVideos = videos.some((video) => video.type === "short");
+  const displayMode = normalizeWorksDisplayMode(works.displayMode);
+  const filtersMarkup = !hasVideos
+    ? ""
+    : displayMode === "category-stack"
+      ? (works.categoryStackTypeFilterEnabled ? renderPreviewCategoryStackWorksFilters(hasShortVideos) : "")
+      : renderPreviewGridWorksFilters(categories, hasShortVideos);
+  const contentMarkup = displayMode === "category-stack"
+    ? renderPreviewWorksCategoryStack(videos, categories, works)
+    : renderPreviewWorksGrid(videos, works.gridColumns);
+
   return `
     <section class="preview-render-root bg-[#16130a] px-6 py-14 text-[#e9e2d2] md:px-8" style="font-family:'Epilogue', sans-serif;">
       <div id="works" class="mx-auto max-w-screen-2xl border-t border-white/10 pt-12">
@@ -1083,21 +1811,27 @@ function buildWorksPreview() {
           </div>
           ${description ? `<div class="max-w-2xl text-sm leading-relaxed text-[#cec6ad] md:text-base">${escapeHTML(description)}</div>` : ""}
         </div>
-        ${hasVideos ? `<div class="mb-8">${renderPreviewWorksFilters()}</div>` : ""}
-        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          ${renderPreviewWorksCards()}
-        </div>
+        ${filtersMarkup ? `<div class="mb-8">${filtersMarkup}</div>` : ""}
+        ${contentMarkup}
       </div>
     </section>
   `;
 }
 
 function buildProcessPreview() {
+  if (state.data.pricing.processEnabled === false) {
+    return `
+      <section class="preview-render-root bg-[#16130a] px-6 py-14 text-[#e9e2d2] md:px-8" style="font-family:'Epilogue', sans-serif;">
+        <div class="mx-auto max-w-screen-xl">${previewHiddenBlock("진행 프로세스 섹션이 꺼져 있습니다.")}</div>
+      </section>
+    `;
+  }
+
   return `
       <section class="preview-render-root bg-[#16130a] px-6 py-14 text-[#e9e2d2] md:px-8" style="font-family:'Epilogue', sans-serif;">
         <div id="process-section" class="mx-auto max-w-screen-xl border-t border-white/10 pt-12">
           <div class="mb-10 text-center text-2xl font-bold text-white">${escapeHTML(textOrFallback(state.data.pricing.processTitle, "진행 프로세스 및 정책"))}</div>
-          <div class="grid gap-4 md:grid-cols-4">
+          <div class="grid gap-4">
             ${renderPreviewProcessSteps()}
           </div>
         </div>
@@ -1128,26 +1862,10 @@ function buildPricingPreview() {
           ${renderPreviewPlanCards()}
         </div>
 
-        <div class="mt-20 grid gap-6 md:grid-cols-2">
-          <section class="flex flex-col justify-center bg-[#1e1c12] p-10">
-            <div class="mb-6 text-3xl font-bold text-white">${escapeHTML(textOrFallback(state.data.pricing.customWork.title, "커스텀 작업이 필요하신가요?"))}</div>
-            <div class="mb-8 leading-relaxed text-[#cec6ad]">${escapeHTML(textOrFallback(state.data.pricing.customWork.description, "커스텀 작업 설명을 입력하면 이 영역에 반영됩니다."))}</div>
-            <div class="flex items-center gap-4">
-              <span class="text-xl font-black italic tracking-tight text-[#fde047]">${escapeHTML(textOrFallback(state.data.pricing.customWork.highlight, "FAST & ACCURATE"))}</span>
-              <span class="h-px flex-1 bg-white/10"></span>
-            </div>
-          </section>
-
-          <section class="relative min-h-[280px] overflow-hidden bg-[#2d2a1f]">
-            ${state.data.pricing.customWork.imageUrl
-              ? `<img class="h-full w-full object-cover grayscale" alt="${escapeHTML(state.data.pricing.customWork.imageAlt || state.data.pricing.customWork.title || "")}" src="${escapeHTML(state.data.pricing.customWork.imageUrl)}">`
-              : '<div class="flex h-full min-h-[280px] items-center justify-center text-sm font-medium text-[#8b8577]">커스텀 작업 이미지를 입력하면 이 영역에 표시됩니다.</div>'}
-            <div class="absolute inset-0 bg-gradient-to-t from-[#16130a] to-transparent opacity-70"></div>
-            <div class="absolute bottom-8 left-8">
-              <div class="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-[#fde047]">${escapeHTML(textOrFallback(state.data.pricing.customWork.eyebrow, "Studio Quality"))}</div>
-              <div class="text-2xl font-bold text-white">${escapeHTML(textOrFallback(state.data.pricing.customWork.caption || state.data.pricing.customWork.title, "압도적인 퀄리티의 비결"))}</div>
-            </div>
-          </section>
+        <div class="mt-20 grid gap-6">
+          ${state.data.pricing.customWorksEnabled === false
+            ? previewHiddenBlock("커스텀 작업 블록이 꺼져 있습니다.")
+            : renderPreviewCustomWorks()}
         </div>
       </div>
     </section>
@@ -1156,6 +1874,7 @@ function buildPricingPreview() {
 
 function buildContactFooterPreview() {
   const details = state.data.contact.details.filter((detail) => detail.label || detail.value);
+  const footerEnabled = state.data.site.footer.enabled !== false;
 
   return `
     <section class="preview-render-root bg-[#16130a] text-[#e9e2d2]" style="font-family:'Epilogue', sans-serif;">
@@ -1203,15 +1922,19 @@ function buildContactFooterPreview() {
            </section>`
         : ""}
 
-      <footer class="w-full px-6 py-16 md:px-8 md:py-20">
-        <div class="mx-auto flex max-w-screen-2xl flex-col items-center gap-10 border-t border-white/10 pt-12 text-center">
-          <div class="text-3xl font-black uppercase tracking-tighter text-white md:text-4xl">${escapeHTML(textOrFallback(state.data.site.footer.title, "STUDIO JINYEONG"))}</div>
-          <div class="flex flex-wrap items-center justify-center gap-4">
-            ${renderPreviewFooterLinks()}
-          </div>
-          <div class="text-[0.6875rem] uppercase tracking-[0.15em] text-[#97917a] opacity-60">${escapeHTML(textOrFallback(state.data.site.footer.copy, "© 2026 STUDIO JINYEONG. 모든 권리 보유."))}</div>
-        </div>
-      </footer>
+      ${footerEnabled
+        ? `<footer class="w-full px-6 py-16 md:px-8 md:py-20">
+             <div class="mx-auto flex max-w-screen-2xl flex-col items-center gap-10 border-t border-white/10 pt-12 text-center">
+               <div class="text-3xl font-black uppercase tracking-tighter text-white md:text-4xl">${escapeHTML(textOrFallback(state.data.site.footer.title, "STUDIO JINYEONG"))}</div>
+               ${state.data.site.footer.linksEnabled === false
+                 ? ""
+                 : `<div class="flex flex-wrap items-center justify-center gap-4">
+                      ${renderPreviewFooterLinks()}
+                    </div>`}
+               <div class="text-[0.6875rem] uppercase tracking-[0.15em] text-[#97917a] opacity-60">${escapeHTML(textOrFallback(state.data.site.footer.copy, "© 2026 STUDIO JINYEONG. 모든 권리 보유."))}</div>
+             </div>
+           </footer>`
+        : `<div class="px-6 pb-12 md:px-8">${previewHiddenBlock("푸터가 꺼져 있습니다.")}</div>`}
     </section>
   `;
 }
@@ -1236,6 +1959,7 @@ function buildLivePreviewMarkup() {
     case "brand":
       return buildBrandPreview();
     case "hero":
+    case "hero-panels":
       return buildHeroPreview();
     case "projects":
       return buildProjectsPreview();
@@ -1287,6 +2011,14 @@ function renderDirectInputs() {
   });
 }
 
+function renderCheckboxInputs() {
+  Object.entries(CHECKBOX_BINDINGS).forEach(([id, path]) => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.checked = Boolean(getByPath(path));
+  });
+}
+
 function renderSummary() {
   $("#summary-nav-links").textContent = String(state.data.site.nav.links.length);
   $("#summary-projects").textContent = String(state.data.projects.cards.length);
@@ -1303,6 +2035,15 @@ function rowActions(listKey, index, deleteLabel = "삭제") {
       <button type="button" data-move-list="${escapeHTML(listKey)}" data-index="${index}" data-direction="-1">위로</button>
       <button type="button" data-move-list="${escapeHTML(listKey)}" data-index="${index}" data-direction="1">아래로</button>
       <button class="danger-action" type="button" data-delete-list="${escapeHTML(listKey)}" data-index="${index}">${escapeHTML(deleteLabel)}</button>
+    </div>
+  `;
+}
+
+function moveOnlyActions(listKey, index) {
+  return `
+    <div class="inline-row-actions">
+      <button type="button" data-move-list="${escapeHTML(listKey)}" data-index="${index}" data-direction="-1">위로</button>
+      <button type="button" data-move-list="${escapeHTML(listKey)}" data-index="${index}" data-direction="1">아래로</button>
     </div>
   `;
 }
@@ -1356,6 +2097,169 @@ function renderHeroActionList() {
       ${rowActions("hero-actions", index)}
     </article>
   `).join("");
+}
+
+function syncHeroCareerModeState() {
+  const mode = normalizeHeroCareerMode(state.data.hero.infoPanels?.career?.mode);
+  const select = $("#hero-career-mode");
+  if (select) select.value = mode;
+
+  [
+    ["structured", "#hero-career-structured-group"],
+    ["simple", "#hero-career-simple-group"],
+    ["freeform", "#hero-career-freeform-group"],
+  ].forEach(([groupMode, selector]) => {
+    const group = $(selector);
+    if (!group) return;
+    const isActive = groupMode === mode;
+    group.classList.toggle("is-active", isActive);
+    group.hidden = !isActive;
+  });
+}
+
+function syncHeroInfoLayoutState() {
+  const select = $("#hero-info-layout-preset");
+  if (select) {
+    select.value = normalizeHeroInfoLayoutPreset(state.data.hero.infoPanels?.layoutPreset);
+  }
+}
+
+function renderHeroCareerStructuredList() {
+  const list = $("#hero-career-structured-list");
+  if (!list) return;
+  const items = state.data.hero.infoPanels?.career?.structuredItems || [];
+  if (!items.length) {
+    list.innerHTML = '<div class="empty-state slim">등록된 구조형 경력이 없습니다.</div>';
+    return;
+  }
+
+  list.innerHTML = items.map((item, index) => `
+    <article class="editor-row" data-career-structured-index="${index}">
+      <div class="section-row-head">
+        <h3>항목 ${index + 1}</h3>
+        ${rowActions("career-structured", index)}
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>제목</span>
+          <input type="text" value="${escapeHTML(item.title)}" data-career-structured-field="title">
+        </label>
+        <label class="field">
+          <span>기간</span>
+          <input type="text" value="${escapeHTML(item.period)}" data-career-structured-field="period" placeholder="2024.01 - 2025.03">
+        </label>
+        <label class="field span-2">
+          <span>설명</span>
+          <textarea rows="4" data-career-structured-field="description">${escapeHTML(item.description)}</textarea>
+        </label>
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderHeroCareerSimpleList() {
+  const list = $("#hero-career-simple-list");
+  if (!list) return;
+  const items = state.data.hero.infoPanels?.career?.simpleItems || [];
+  if (!items.length) {
+    list.innerHTML = '<div class="empty-state slim">등록된 간단형 경력이 없습니다.</div>';
+    return;
+  }
+
+  list.innerHTML = items.map((item, index) => `
+    <article class="editor-row three-col" data-career-simple-index="${index}">
+      <label class="field">
+        <span>문장</span>
+        <input type="text" value="${escapeHTML(item.text)}" data-career-simple-field="text">
+      </label>
+      <label class="field">
+        <span>기간</span>
+        <input type="text" value="${escapeHTML(item.period)}" data-career-simple-field="period" placeholder="2024.01~">
+      </label>
+      ${rowActions("career-simple", index)}
+    </article>
+  `).join("");
+}
+
+function renderHeroResourceEditorList(listSelector, listKey, items, emptyMessage) {
+  const list = $(listSelector);
+  if (!list) return;
+  if (!items.length) {
+    list.innerHTML = `<div class="empty-state slim">${escapeHTML(emptyMessage)}</div>`;
+    return;
+  }
+
+  list.innerHTML = items.map((item, index) => `
+    <article class="editor-row hero-logo-row" data-${listKey}-index="${index}">
+      <label class="field">
+        <span>이름</span>
+        <input type="text" value="${escapeHTML(item.name)}" data-${listKey}-field="name">
+      </label>
+      <label class="field">
+        <span>로고 URL</span>
+        <input type="text" value="${escapeHTML(item.logoUrl)}" data-${listKey}-field="logoUrl" placeholder="https://...">
+      </label>
+      <label class="field">
+        <span>이미지 설명</span>
+        <input type="text" value="${escapeHTML(item.logoAlt)}" data-${listKey}-field="logoAlt" placeholder="logo alt text">
+      </label>
+      ${rowActions(listKey, index)}
+    </article>
+  `).join("");
+}
+
+function renderHeroToolPresetButtons() {
+  const container = $("#hero-tool-presets");
+  if (!container) return;
+  container.innerHTML = Object.entries(HERO_TOOL_PRESETS).map(([key, preset]) => `
+    <button type="button" data-hero-tool-preset="${escapeHTML(key)}">${escapeHTML(preset.name)}</button>
+  `).join("");
+}
+
+function renderHeroInfoEditors() {
+  syncHeroInfoLayoutState();
+  syncHeroCareerModeState();
+  renderHeroToolPresetButtons();
+  renderHeroCareerStructuredList();
+  renderHeroCareerSimpleList();
+  renderHeroResourceEditorList(
+    "#hero-tools-list",
+    "hero-tools",
+    state.data.hero.infoPanels?.tools?.items || [],
+    "등록된 툴이 없습니다.",
+  );
+  renderHeroResourceEditorList(
+    "#hero-bgm-list",
+    "hero-bgm",
+    state.data.hero.infoPanels?.bgm?.items || [],
+    "등록된 BGM 툴이 없습니다.",
+  );
+}
+
+function findHeroToolIndexByName(name) {
+  const normalizedName = String(name || "").trim().toLowerCase();
+  if (!normalizedName) return -1;
+  return (state.data.hero.infoPanels?.tools?.items || []).findIndex((item) => String(item?.name || "").trim().toLowerCase() === normalizedName);
+}
+
+function addHeroToolPreset(presetKey) {
+  const preset = HERO_TOOL_PRESETS[presetKey];
+  if (!preset) {
+    setStatus("알 수 없는 기본 툴 프리셋입니다.", "error");
+    return;
+  }
+
+  if (findHeroToolIndexByName(preset.name) !== -1) {
+    setStatus(`${preset.name}는 이미 등록되어 있습니다.`, "info");
+    return;
+  }
+
+  state.data.hero.infoPanels.tools.items.push({
+    name: preset.name,
+    logoUrl: preset.logoUrl,
+    logoAlt: preset.logoAlt,
+  });
+  applyDataChange(`${preset.name} 기본 툴을 추가했습니다.`);
 }
 
 function renderProjectCardList() {
@@ -1417,7 +2321,7 @@ function renderWorksVideoList() {
   if (searchInput && searchInput.value !== state.search) searchInput.value = state.search;
   if (filterInput) filterInput.value = state.typeFilter;
 
-  const categories = getWorksCategories();
+  const categories = getOrderedWorksCategories();
   const keyword = state.search.trim().toLowerCase();
   const filtered = state.data.works.videos
     .map((video, index) => ({ video, index }))
@@ -1489,6 +2393,121 @@ function renderWorksVideoForm() {
   renderWorksCategoryOptions();
   toggleWorksNewCategoryField();
   syncWorksVideoUrlFeedback({ skipMetadata: true });
+}
+
+function syncWorksCategoryOrderState() {
+  const works = state.data.works || {};
+  works.videos = normalizeWorksVideos(works.videos);
+  works.displayMode = normalizeWorksDisplayMode(works.displayMode);
+  works.gridColumns = normalizeWorksColumnCount(works.gridColumns, DEFAULT_DATA.works.gridColumns);
+  works.categoryStackColumns = normalizeWorksColumnCount(works.categoryStackColumns, DEFAULT_DATA.works.categoryStackColumns);
+  works.categoryStackTypeFilterEnabled = Boolean(works.categoryStackTypeFilterEnabled);
+  works.categoryStackSingleColumnSize = normalizeWorksSingleColumnSize(works.categoryStackSingleColumnSize);
+  works.categoryOrder = normalizeWorksCategoryOrder(works.categoryOrder, works.videos);
+  works.categoryEntries = normalizeWorksCategoryEntries(works.categoryEntries, works.videos, works.categoryOrder);
+  state.data.works = works;
+}
+
+function renderWorksDisplaySettings() {
+  const works = state.data.works || DEFAULT_DATA.works;
+  const displayMode = normalizeWorksDisplayMode(works.displayMode);
+  const gridGroup = $("#works-grid-settings-group");
+  const stackGroup = $("#works-category-stack-settings-group");
+  const singleSizeField = $("#works-category-stack-single-column-size-field");
+  const displayModeInput = $("#works-display-mode");
+  const gridColumnsInput = $("#works-grid-columns");
+  const stackColumnsInput = $("#works-category-stack-columns");
+  const stackFilterInput = $("#works-category-stack-type-filter-enabled");
+  const singleSizeInput = $("#works-category-stack-single-column-size");
+  const isSingleColumn = normalizeWorksColumnCount(works.categoryStackColumns, DEFAULT_DATA.works.categoryStackColumns) === 1;
+
+  if (displayModeInput) displayModeInput.value = displayMode;
+  if (gridColumnsInput) gridColumnsInput.value = String(normalizeWorksColumnCount(works.gridColumns, DEFAULT_DATA.works.gridColumns));
+  if (stackColumnsInput) stackColumnsInput.value = String(normalizeWorksColumnCount(works.categoryStackColumns, DEFAULT_DATA.works.categoryStackColumns));
+  if (stackFilterInput) stackFilterInput.checked = works.categoryStackTypeFilterEnabled !== false;
+  if (singleSizeInput) singleSizeInput.value = normalizeWorksSingleColumnSize(works.categoryStackSingleColumnSize);
+
+  if (gridGroup) {
+    gridGroup.hidden = displayMode !== "grid";
+    gridGroup.classList.toggle("is-active", displayMode === "grid");
+  }
+  if (stackGroup) {
+    stackGroup.hidden = displayMode !== "category-stack";
+    stackGroup.classList.toggle("is-active", displayMode === "category-stack");
+  }
+  if (singleSizeField) {
+    singleSizeField.hidden = displayMode !== "category-stack" || !isSingleColumn;
+  }
+}
+
+function renderWorksCategoryOrderList() {
+  const list = $("#works-category-order-list");
+  if (!list) return;
+
+  const entries = normalizeWorksCategoryEntries(
+    state.data.works.categoryEntries,
+    state.data.works.videos,
+    state.data.works.categoryOrder,
+  );
+
+  if (!entries.length) {
+    list.innerHTML = '<div class="empty-state slim">등록된 카테고리가 없습니다. 영상을 추가하면 자동으로 목록이 생성됩니다.</div>';
+    return;
+  }
+
+  const counts = entries.reduce((accumulator, entry) => {
+    accumulator[entry.category] = state.data.works.videos.filter((video) => video.category === entry.category).length;
+    return accumulator;
+  }, {});
+
+  list.innerHTML = entries.map((entry, index) => `
+    <article class="editor-row" data-works-category-entry-index="${index}">
+      <div class="section-row-head">
+        <div>
+          <h3>${escapeHTML(entry.category)}</h3>
+          <p class="field-note">현재 이 카테고리의 영상 ${escapeHTML(String(counts[entry.category] || 0))}개</p>
+        </div>
+        ${moveOnlyActions("works-category-order", index)}
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>기준 카테고리</span>
+          <input type="text" value="${escapeHTML(entry.category)}" readonly>
+        </label>
+        <label class="field">
+          <span>표시 제목</span>
+          <input type="text" value="${escapeHTML(entry.title)}" data-works-category-entry-field="title" placeholder="비워두면 카테고리명을 그대로 사용합니다.">
+        </label>
+        <label class="field span-2">
+          <span>보조 정보</span>
+          <textarea rows="3" data-works-category-entry-field="meta" placeholder="예: 2024. 08. 30. ~ 2024. 10. 04.&#10;메인 편집자 / 외주 편집자">${escapeHTML(entry.meta)}</textarea>
+        </label>
+        <label class="field">
+          <span>카테고리별 한 줄 개수</span>
+          <select data-works-category-entry-field="columns">
+            <option value="" ${entry.columns == null ? "selected" : ""}>공통 설정 사용</option>
+            <option value="1" ${entry.columns === 1 ? "selected" : ""}>1개</option>
+            <option value="2" ${entry.columns === 2 ? "selected" : ""}>2개</option>
+            <option value="3" ${entry.columns === 3 ? "selected" : ""}>3개</option>
+            <option value="4" ${entry.columns === 4 ? "selected" : ""}>4개</option>
+            <option value="5" ${entry.columns === 5 ? "selected" : ""}>5개</option>
+            <option value="6" ${entry.columns === 6 ? "selected" : ""}>6개</option>
+            <option value="7" ${entry.columns === 7 ? "selected" : ""}>7개</option>
+            <option value="8" ${entry.columns === 8 ? "selected" : ""}>8개</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>카테고리별 1열 크기</span>
+          <select data-works-category-entry-field="singleColumnSize">
+            <option value="" ${!entry.singleColumnSize ? "selected" : ""}>공통 설정 사용</option>
+            <option value="large" ${entry.singleColumnSize === "large" ? "selected" : ""}>large</option>
+            <option value="medium" ${entry.singleColumnSize === "medium" ? "selected" : ""}>medium</option>
+            <option value="small" ${entry.singleColumnSize === "small" ? "selected" : ""}>small</option>
+          </select>
+        </label>
+      </div>
+    </article>
+  `).join("");
 }
 
 function renderStatsItemList() {
@@ -1622,6 +2641,59 @@ function renderPricingPlanList() {
   `).join("");
 }
 
+function renderCustomWorkList() {
+  const list = $("#custom-work-list");
+  if (!list) return;
+  const items = state.data.pricing.customWorks || [];
+
+  if (!items.length) {
+    list.innerHTML = '<div class="empty-state">등록된 커스텀 작업 블록이 없습니다.</div>';
+    return;
+  }
+
+  list.innerHTML = items.map((block, index) => `
+    <article class="editor-row" data-custom-work-index="${index}">
+      <div class="section-row-head">
+        <div>
+          <h3>블록 ${index + 1}</h3>
+          <p class="field-note">${index % 2 === 0 ? "공개 페이지에서 이미지가 오른쪽에 배치됩니다." : "공개 페이지에서 이미지가 왼쪽에 배치됩니다."}</p>
+        </div>
+        ${rowActions("custom-works", index)}
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>이미지 Eyebrow</span>
+          <input type="text" value="${escapeHTML(block.eyebrow)}" data-custom-work-field="eyebrow">
+        </label>
+        <label class="field">
+          <span>강조 문구</span>
+          <input type="text" value="${escapeHTML(block.highlight)}" data-custom-work-field="highlight">
+        </label>
+        <label class="field span-2">
+          <span>제목</span>
+          <input type="text" value="${escapeHTML(block.title)}" data-custom-work-field="title">
+        </label>
+        <label class="field span-2">
+          <span>설명</span>
+          <textarea rows="4" data-custom-work-field="description">${escapeHTML(block.description)}</textarea>
+        </label>
+        <label class="field span-2">
+          <span>이미지 캡션</span>
+          <input type="text" value="${escapeHTML(block.caption)}" data-custom-work-field="caption">
+        </label>
+        <label class="field span-2">
+          <span>이미지 URL</span>
+          <input type="text" value="${escapeHTML(block.imageUrl)}" data-custom-work-field="imageUrl">
+        </label>
+        <label class="field span-2">
+          <span>이미지 대체 텍스트</span>
+          <input type="text" value="${escapeHTML(block.imageAlt)}" data-custom-work-field="imageAlt">
+        </label>
+      </div>
+    </article>
+  `).join("");
+}
+
 function renderContactDetailList() {
   const list = $("#contact-detail-list");
   if (!list) return;
@@ -1667,16 +2739,22 @@ function renderFooterLinkList() {
 }
 
 function renderAll() {
+  syncWorksCategoryOrderState();
   renderDirectInputs();
+  renderCheckboxInputs();
   renderSummary();
   renderNavLinkList();
   renderHeroActionList();
+  renderHeroInfoEditors();
   renderProjectCardList();
+  renderWorksDisplaySettings();
+  renderWorksCategoryOrderList();
   renderWorksVideoForm();
   renderWorksVideoList();
   renderStatsItemList();
   renderProcessStepList();
   renderPricingPlanList();
+  renderCustomWorkList();
   renderContactDetailList();
   renderFooterLinkList();
   refreshJsonOutput();
@@ -1716,13 +2794,17 @@ function setFloatingActionsOpen(isOpen) {
 }
 
 function applyMinorChange(message = "변경 사항이 반영되었습니다.") {
+  syncWorksCategoryOrderState();
   renderSummary();
+  renderWorksDisplaySettings();
+  renderWorksCategoryOrderList();
   refreshJsonOutput();
   renderLivePreview();
   setStatus(message, "success");
 }
 
 function applyDataChange(message = "변경 사항이 반영되었습니다.") {
+  syncWorksCategoryOrderState();
   renderAll();
   setStatus(message, "success");
 }
@@ -1749,16 +2831,28 @@ function listByKey(listKey) {
       return state.data.site.nav.links;
     case "hero-actions":
       return state.data.hero.actions;
+    case "career-structured":
+      return state.data.hero.infoPanels.career.structuredItems;
+    case "career-simple":
+      return state.data.hero.infoPanels.career.simpleItems;
+    case "hero-tools":
+      return state.data.hero.infoPanels.tools.items;
+    case "hero-bgm":
+      return state.data.hero.infoPanels.bgm.items;
     case "projects":
       return state.data.projects.cards;
     case "works-videos":
       return state.data.works.videos;
+    case "works-category-order":
+      return state.data.works.categoryOrder;
     case "stats":
       return state.data.stats.items;
     case "process":
       return state.data.pricing.processSteps;
     case "plans":
       return state.data.pricing.plans;
+    case "custom-works":
+      return state.data.pricing.customWorks;
     case "contact-details":
       return state.data.contact.details;
     case "footer-links":
@@ -1876,8 +2970,20 @@ function bindDirectInputs() {
   });
 }
 
+function bindCheckboxInputs() {
+  Object.entries(CHECKBOX_BINDINGS).forEach(([id, path]) => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.addEventListener("change", (event) => {
+      setByPath(path, event.target.checked);
+      applyMinorChange("섹션 표시 설정이 반영되었습니다.");
+    });
+  });
+}
+
 function bindEvents() {
   bindDirectInputs();
+  bindCheckboxInputs();
 
   $$(".tab-button").forEach((button) => {
     button.addEventListener("click", () => switchTab(button.dataset.tab));
@@ -1921,6 +3027,78 @@ function bindEvents() {
     const index = Number(row.dataset.heroActionIndex);
     state.data.hero.actions[index][field] = event.target.value;
     applyMinorChange("히어로 액션이 반영되었습니다.");
+  });
+
+  $("#hero-career-mode")?.addEventListener("change", (event) => {
+    state.data.hero.infoPanels.career.mode = normalizeHeroCareerMode(event.target.value);
+    applyDataChange("경력사항 공개 형식이 반영되었습니다.");
+  });
+
+  $("#hero-info-layout-preset")?.addEventListener("change", (event) => {
+    state.data.hero.infoPanels.layoutPreset = normalizeHeroInfoLayoutPreset(event.target.value);
+    applyDataChange("히어로 3분할 비율이 반영되었습니다.");
+  });
+
+  $("#add-career-structured")?.addEventListener("click", () => {
+    state.data.hero.infoPanels.career.structuredItems.push({ title: "", period: "", description: "" });
+    applyDataChange("구조형 경력 항목을 추가했습니다.");
+  });
+
+  $("#hero-career-structured-list")?.addEventListener("input", (event) => {
+    const row = event.target.closest("[data-career-structured-index]");
+    const field = event.target.dataset.careerStructuredField;
+    if (!row || !field) return;
+    const index = Number(row.dataset.careerStructuredIndex);
+    state.data.hero.infoPanels.career.structuredItems[index][field] = event.target.value;
+    applyMinorChange("구조형 경력 항목이 반영되었습니다.");
+  });
+
+  $("#add-career-simple")?.addEventListener("click", () => {
+    state.data.hero.infoPanels.career.simpleItems.push({ text: "", period: "" });
+    applyDataChange("간단형 경력 항목을 추가했습니다.");
+  });
+
+  $("#hero-career-simple-list")?.addEventListener("input", (event) => {
+    const row = event.target.closest("[data-career-simple-index]");
+    const field = event.target.dataset.careerSimpleField;
+    if (!row || !field) return;
+    const index = Number(row.dataset.careerSimpleIndex);
+    state.data.hero.infoPanels.career.simpleItems[index][field] = event.target.value;
+    applyMinorChange("간단형 경력 항목이 반영되었습니다.");
+  });
+
+  $("#add-hero-tool")?.addEventListener("click", () => {
+    state.data.hero.infoPanels.tools.items.push({ name: "", logoUrl: "", logoAlt: "" });
+    applyDataChange("사용 가능한 툴 항목을 추가했습니다.");
+  });
+
+  $("#hero-tool-presets")?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-hero-tool-preset]");
+    if (!button) return;
+    addHeroToolPreset(button.dataset.heroToolPreset);
+  });
+
+  $("#hero-tools-list")?.addEventListener("input", (event) => {
+    const row = event.target.closest("[data-hero-tools-index]");
+    const field = event.target.dataset.heroToolsField;
+    if (!row || !field) return;
+    const index = Number(row.dataset.heroToolsIndex);
+    state.data.hero.infoPanels.tools.items[index][field] = event.target.value;
+    applyMinorChange("사용 가능한 툴 항목이 반영되었습니다.");
+  });
+
+  $("#add-hero-bgm")?.addEventListener("click", () => {
+    state.data.hero.infoPanels.bgm.items.push({ name: "", logoUrl: "", logoAlt: "" });
+    applyDataChange("BGM 사용 툴 항목을 추가했습니다.");
+  });
+
+  $("#hero-bgm-list")?.addEventListener("input", (event) => {
+    const row = event.target.closest("[data-hero-bgm-index]");
+    const field = event.target.dataset.heroBgmField;
+    if (!row || !field) return;
+    const index = Number(row.dataset.heroBgmIndex);
+    state.data.hero.infoPanels.bgm.items[index][field] = event.target.value;
+    applyMinorChange("BGM 사용 툴 항목이 반영되었습니다.");
   });
 
   $("#add-project-card")?.addEventListener("click", () => {
@@ -1969,6 +3147,45 @@ function bindEvents() {
   $("#works-new-category-name")?.addEventListener("input", () => {
     renderWorksNewVideoPreview();
   });
+
+  $("#works-display-mode")?.addEventListener("change", (event) => {
+    state.data.works.displayMode = normalizeWorksDisplayMode(event.target.value);
+    applyMinorChange("영상 포트폴리오 표시 방식이 반영되었습니다.");
+  });
+
+  $("#works-grid-columns")?.addEventListener("change", (event) => {
+    state.data.works.gridColumns = normalizeWorksColumnCount(event.target.value, DEFAULT_DATA.works.gridColumns);
+    applyMinorChange("그리드형 한 줄 영상 개수가 반영되었습니다.");
+  });
+
+  $("#works-category-stack-columns")?.addEventListener("change", (event) => {
+    state.data.works.categoryStackColumns = normalizeWorksColumnCount(event.target.value, DEFAULT_DATA.works.categoryStackColumns);
+    applyMinorChange("카테고리 스택 열 개수가 반영되었습니다.");
+  });
+
+  $("#works-category-stack-type-filter-enabled")?.addEventListener("change", (event) => {
+    state.data.works.categoryStackTypeFilterEnabled = event.target.checked;
+    applyMinorChange("카테고리 스택 타입 필터 표시 설정이 반영되었습니다.");
+  });
+
+  $("#works-category-stack-single-column-size")?.addEventListener("change", (event) => {
+    state.data.works.categoryStackSingleColumnSize = normalizeWorksSingleColumnSize(event.target.value);
+    applyMinorChange("1열 높이 크기 설정이 반영되었습니다.");
+  });
+
+  const handleWorksCategoryEntryField = (event) => {
+    const row = event.target.closest("[data-works-category-entry-index]");
+    const field = event.target.dataset.worksCategoryEntryField;
+    if (!row || !field) return;
+    const index = Number(row.dataset.worksCategoryEntryIndex);
+    const entry = state.data.works.categoryEntries?.[index];
+    if (!entry) return;
+    entry[field] = event.target.value;
+    applyMinorChange("카테고리 표시 정보가 반영되었습니다.");
+  };
+
+  $("#works-category-order-list")?.addEventListener("input", handleWorksCategoryEntryField);
+  $("#works-category-order-list")?.addEventListener("change", handleWorksCategoryEntryField);
 
   $("#works-video-form")?.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -2133,6 +3350,19 @@ function bindEvents() {
     applyDataChange("가격 플랜을 추가했습니다.");
   });
 
+  $("#add-custom-work")?.addEventListener("click", () => {
+    state.data.pricing.customWorks.push({
+      eyebrow: "",
+      title: "",
+      description: "",
+      highlight: "",
+      caption: "",
+      imageUrl: "",
+      imageAlt: "",
+    });
+    applyDataChange("커스텀 작업 블록을 추가했습니다.");
+  });
+
   $("#pricing-plan-list")?.addEventListener("input", (event) => {
     const planCard = event.target.closest("[data-plan-index]");
     if (!planCard) return;
@@ -2160,6 +3390,17 @@ function bindEvents() {
     const featureIndex = Number(featureRow.dataset.featureIndex);
     plan.features[featureIndex] = event.target.value;
     applyMinorChange("플랜 포함 항목이 반영되었습니다.");
+  });
+
+  $("#custom-work-list")?.addEventListener("input", (event) => {
+    const row = event.target.closest("[data-custom-work-index]");
+    const field = event.target.dataset.customWorkField;
+    if (!row || !field) return;
+    const index = Number(row.dataset.customWorkIndex);
+    const block = state.data.pricing.customWorks[index];
+    if (!block) return;
+    block[field] = event.target.value;
+    applyMinorChange("커스텀 작업 블록이 반영되었습니다.");
   });
 
   $("#pricing-plan-list")?.addEventListener("click", (event) => {
