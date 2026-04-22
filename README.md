@@ -18,6 +18,23 @@ GitHub 저장소의 Pages 설정에서 배포 소스를 `gh-pages` 브랜치의 
 3. 생성한 내용을 `data/site.json`에 반영합니다.
 4. 정적 페이지인 `index.html`, `pricing.html`, `contact.html`에서 결과를 확인합니다.
 
+## main -> gh-pages 동기화
+
+`main`과 `gh-pages`의 차이를 `data/site.json` 하나로 유지하고 싶다면 아래 스크립트를 사용하세요.
+
+```bash
+bash scripts/sync-gh-pages.sh
+```
+
+이 스크립트는 다음 순서로 동작합니다.
+
+1. 작업 트리가 깨끗한지 확인합니다.
+2. `gh-pages` 브랜치의 `data/site.json`을 임시로 보관합니다.
+3. `main`을 `gh-pages`에 병합합니다.
+4. 마지막에 `data/site.json`만 다시 `gh-pages` 버전으로 복원한 뒤 병합 커밋을 만듭니다.
+
+즉, HTML/CSS/JS 수정은 `main`에서 가져오고, 배포용 JSON만 `gh-pages`에 남길 수 있습니다.
+
 ## 템플릿 기본값
 
 - 기본 브랜드: `studio / your-name`
