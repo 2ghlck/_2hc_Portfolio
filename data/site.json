@@ -2,7 +2,7 @@
   "site": {
     "title": "영상 포트폴리오 템플릿",
     "description": "영상 편집자와 크리에이터를 위한 정적 포트폴리오 템플릿입니다. site.json만 수정해 브랜드, 작업물, 가격, 문의 정보를 구성할 수 있습니다.",
-    "githubRepo": "",
+    "githubRepo": "2ghlck/_2hc_Portfolio",
     "brand": {
       "prefix": "studio",
       "name": "your-name"
@@ -30,15 +30,20 @@
       "linksEnabled": false,
       "title": "STUDIO YOUR-NAME",
       "copy": "© 2026 STUDIO YOUR-NAME. 모든 권리 보유.",
-      "links": []
+      "links": [
+        {
+          "label": "GitHub Repo",
+          "url": "https://github.com/2ghlck/_2hc_Portfolio"
+        }
+      ]
     }
   },
   "hero": {
     "backgroundVideoUrl": "",
     "eyebrow": "VIDEO PORTFOLIO TEMPLATE",
-    "title": "브랜드에 맞는\n영상 포트폴리오를 시작하세요.",
-    "titleAccent": "영상 포트폴리오",
-    "description": "JSON 데이터만 교체하면 소개 문구, 작업물, 가격, 문의 섹션을 프로젝트에 맞게 빠르게 구성할 수 있습니다.",
+    "title": "원하시는 레퍼런스로 \n제작해드립니다",
+    "titleAccent": "레퍼런스",
+    "description": "각 채널과 콘텐츠가 가진 색깔을 분석하고,\n그에 맞는 편집 스타일과 흐름을 설계합니다.\n단순히 보기 좋은 영상이 아니라,\n브랜드의 메시지가 명확하게 전달될 수 있도록 만드는 데 집중합니다.\n\n시청자의 이탈을 줄이는 템포 조절과\n적절한 자막 타이밍, 그리고 과하지 않은 효과 활용으로\n영상의 완성도를 높입니다.\n\n정보 전달형, 스토리형, 예능형 등\n다양한 포맷에 맞춰 최적의 결과물을 만들어냅니다.",
     "statusLabel": "Status",
     "statusText": "READY FOR CUSTOMIZATION",
     "actions": [
@@ -58,17 +63,50 @@
       "career": {
         "title": "경력사항",
         "mode": "structured",
-        "structuredItems": [],
+        "structuredItems": [
+          {
+            "title": "3.2만 하디아 前 고정 편집자",
+            "period": "2026.02.01~2026.03.01",
+            "description": ""
+          },
+          {
+            "title": "2.9만 코몽 前 고정 편집자",
+            "period": "2026.04.04~2026.04.24",
+            "description": ""
+          },
+          {
+            "title": "요시요 아카데미 3기 졸업생",
+            "period": "2025.10.12 ~ 2025.11.12",
+            "description": ""
+          }
+        ],
         "simpleItems": [],
         "freeformText": ""
       },
       "tools": {
         "title": "사용 가능한 툴",
-        "items": []
+        "items": [
+          {
+            "name": "Premiere Pro",
+            "logoUrl": "assets/tool-presets/premiere-pro.svg",
+            "logoAlt": "Premiere Pro logo"
+          },
+          {
+            "name": "After Effects",
+            "logoUrl": "assets/tool-presets/after-effects.svg",
+            "logoAlt": "After Effects logo"
+          }
+        ]
       },
       "bgm": {
         "title": "BGM 사용 툴",
-        "items": []
+        "items": [
+          {
+            "name": "Artlist",
+            "logoUrl": "https://search.pstatic.net/sunny?src=https%3A%2F%2Fartlist.io%2Ffavicon.ico%3Fv%3D1&type=f30_30_png_expire24",
+            "logoAlt": "Artlist logo"
+          }
+        ]
       }
     }
   },
@@ -87,6 +125,7 @@
     "sectionTitle": "",
     "sectionDescription": "",
     "emptyText": "영상 항목을 추가하면 이 영역이 자동으로 채워집니다.",
+    "visualPreset": "reference",
     "displayMode": "grid",
     "gridColumns": 3,
     "categoryStackColumns": 2,
@@ -100,6 +139,8 @@
     "sectionEyebrow": "가격 템플릿",
     "title": "서비스 구조를 바로 안내할 수 있게 준비해두세요.",
     "description": "패키지, 포함 항목, 문의 CTA를 예시로 남겨두었습니다. 프로젝트에 맞게 값만 교체하면 됩니다.",
+    "gridColumns": 2,
+    "processStyle": "cards",
     "plans": [
       {
         "slug": "short",
