@@ -111,17 +111,28 @@
     }
   },
   "projects": {
-    "enabled": false,
+    "enabled": true,
     "sectionEyebrow": "",
     "sectionTitle": "",
     "sectionMeta": "",
-    "cards": []
+    "cards": [
+      {
+        "layout": "featured",
+        "tag": "키리누키 계정",
+        "duration": "",
+        "title": "서울 우유",
+        "description": "여러 키리누키 영상을 다룹니다",
+        "ctaLabel": "https://youtu.be/I-0uE2ftHbo",
+        "href": ""
+      }
+    ]
   },
   "stats": {
     "enabled": false,
     "items": []
   },
   "works": {
+    "enabled": true,
     "sectionTitle": "",
     "sectionDescription": "",
     "emptyText": "영상 항목을 추가하면 이 영역이 자동으로 채워집니다.",
@@ -131,9 +142,137 @@
     "categoryStackColumns": 2,
     "categoryStackTypeFilterEnabled": false,
     "categoryStackSingleColumnSize": "medium",
-    "categoryOrder": [],
-    "categoryEntries": [],
-    "videos": []
+    "categoryOrder": [
+      "숏폼",
+      "이샤 키리누키",
+      "탬탬버린 키리누키",
+      "요시요 아카데미",
+      "하디아",
+      "코몽의 로블록스"
+    ],
+    "categoryEntries": [
+      {
+        "category": "숏폼",
+        "title": "",
+        "meta": "",
+        "columns": null,
+        "singleColumnSize": ""
+      },
+      {
+        "category": "이샤 키리누키",
+        "title": "",
+        "meta": "",
+        "columns": null,
+        "singleColumnSize": ""
+      },
+      {
+        "category": "탬탬버린 키리누키",
+        "title": "",
+        "meta": "",
+        "columns": null,
+        "singleColumnSize": ""
+      },
+      {
+        "category": "요시요 아카데미",
+        "title": "",
+        "meta": "",
+        "columns": null,
+        "singleColumnSize": ""
+      },
+      {
+        "category": "하디아",
+        "title": "",
+        "meta": "",
+        "columns": null,
+        "singleColumnSize": ""
+      },
+      {
+        "category": "코몽의 로블록스",
+        "title": "",
+        "meta": "",
+        "columns": null,
+        "singleColumnSize": ""
+      }
+    ],
+    "videos": [
+      {
+        "id": "Z1OOERk7564",
+        "title": "팬심으로 5080을?",
+        "date": "",
+        "type": "short",
+        "category": "이샤 키리누키"
+      },
+      {
+        "id": "mwTsQB5unKg",
+        "title": "차를 샀다고?",
+        "date": "",
+        "type": "short",
+        "category": "숏폼"
+      },
+      {
+        "id": "Ug8YZKwNywc",
+        "title": "이거 진짜에요?",
+        "date": "",
+        "type": "long",
+        "category": "숏폼"
+      },
+      {
+        "id": "Uh7B-JcevwA",
+        "title": "운전은 내가 할게",
+        "date": "",
+        "type": "long",
+        "category": "이샤 키리누키"
+      },
+      {
+        "id": "I-0uE2ftHbo",
+        "title": "탬버린님 포폴 쌀멋서버",
+        "date": "2025-01-01",
+        "type": "long",
+        "category": "탬탬버린 키리누키"
+      },
+      {
+        "id": "_EqJF4DdzdU",
+        "title": "탬탬버린님 포트폴리오",
+        "date": "2025-03-04",
+        "type": "long",
+        "category": "탬탬버린 키리누키"
+      },
+      {
+        "id": "yFncl4BWj7U",
+        "title": "늦잠 편집",
+        "date": "2025-11-01",
+        "type": "long",
+        "category": "요시요 아카데미"
+      },
+      {
+        "id": "57geP_uDfsY",
+        "title": "공모전 영상",
+        "date": "2026-02-01",
+        "type": "long",
+        "category": "요시요 아카데미"
+      },
+      {
+        "id": "TIbJ9yVk1as",
+        "title": "명조 뉴비 이렇게 대하는게 맞나요...",
+        "date": "2026-02-07",
+        "type": "long",
+        "category": "하디아"
+      },
+      {
+        "id": "2c0TQenY61Q",
+        "title": "여자 전용 라이벌 클랜에 몰래 잠입했습니다ㅋㅋㅋㅋ",
+        "date": "2026-04-02",
+        "type": "long",
+        "category": "코몽의 로블록스"
+      },
+      {
+        "id": "tKL1gV8n52E",
+        "title": "마노의 '비밀세팅' 공개ㄷㄷ 랭킹 1등에게 스나를 배워보자!! (하루만에 실력상승?!)",
+        "date": "2026-04-01",
+        "type": "long",
+        "category": "코몽의 로블록스"
+      }
+    ]
   },
   "pricing": {
     "sectionEyebrow": "가격 템플릿",
@@ -143,17 +282,19 @@
     "processStyle": "cards",
     "plans": [
       {
-        "slug": "short",
-        "design": "shortform",
+        "slug": "long",
+        "design": "longform",
         "badge": "",
-        "icon": "smartphone",
-        "title": "숏폼 (Short-form)",
-        "description": "YouTube Shorts, TikTok, Reels 등 트렌디하고 압축적인 영상미가 필요한 콘텐츠",
-        "price": "₩20,000",
-        "priceUnit": "/ 편",
+        "icon": "movie_edit",
+        "title": "롱폼 (Long-form)",
+        "description": "저챗, 게임, 브이로그 편집 다 가능합니다",
+        "price": "₩17,000 (편집점 X)",
+        "priceUnit": "/ 분당",
         "features": [
-          "최대 60초 분량",
-          "클립, 간단한 쇼츠"
+          "최소 8분 분량 최대 30~40분량",
+          "맞춤형 그래픽 디자인",
+          "전문 컷편집 및 자막 작업",
+          "당일 마감 + 100,000 / 빠른 마감 + 70,000"
         ],
         "cta": {
           "label": "",
@@ -164,15 +305,34 @@
         "slug": "long",
         "design": "longform",
         "badge": "",
-        "icon": "movie_edit",
+        "icon": "",
         "title": "롱폼 (Long-form)",
-        "description": "유튜브 브이로그, 인터뷰, 홍보 영상 등 서사와 정보 전달 중심의 영상 콘텐츠",
-        "price": "₩15,000",
+        "description": "저챗, 게임, 브이로그 편집 다 가능합니다",
+        "price": "15,000(편집점 O)",
         "priceUnit": "/ 분당",
         "features": [
-          "최대 15분 분량",
+          "최소 8분 분량 최대 30~40분량",
           "맞춤형 그래픽 디자인",
-          "전문 컷편집 및 자막 작업"
+          "전문 컷편집 및 자막 작업",
+          "당일 마감 + 100,000 / 빠른 마감 + 70,000"
+        ],
+        "cta": {
+          "label": "",
+          "href": ""
+        }
+      },
+      {
+        "slug": "short",
+        "design": "shortform",
+        "badge": "",
+        "icon": "smartphone",
+        "title": "숏폼 (Short-form)",
+        "description": "YouTube Shorts, TikTok, Reels 등 트렌디하고 압축적인 영상미가 필요한 콘텐츠",
+        "price": "₩15,000",
+        "priceUnit": "/ 편",
+        "features": [
+          "최대 60초 분량",
+          "클립, 간단한 쇼츠"
         ],
         "cta": {
           "label": "",
@@ -188,14 +348,14 @@
   },
   "contact": {
     "eyebrow": "CONTACT",
-    "title": "프로젝트 문의는\n이메일로 남겨주세요.",
-    "titleAccent": "이메일",
-    "description": "메일 주소와 응답 정책을 템플릿으로 남겨두었습니다. 실제 운영 정보로 교체해서 사용하세요.",
+    "title": "외주 or 고정 편집자 문의는\n디스코드로 연락 주세요",
+    "titleAccent": "디스코드",
+    "description": "디스코드 닉네임과 응답 정책을 템플릿으로 남겨두었습니다. 실제 운영 정보로 교체해서 사용하세요.",
     "primaryCard": {
-      "label": "Email",
-      "value": "your@email.com",
+      "label": "디스코드 아이디",
+      "value": "_2hc_",
       "note": "문의 내용을 간단히 적어 보내주세요.",
-      "icon": "mail",
+      "icon": "movie_edit",
       "href": "mailto:your@email.com"
     },
     "details": [
