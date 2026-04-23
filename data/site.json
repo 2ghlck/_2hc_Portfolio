@@ -1,17 +1,21 @@
 {
   "site": {
-    "title": "영상 포트폴리오 템플릿",
-    "description": "영상 편집자와 크리에이터를 위한 정적 포트폴리오 템플릿입니다. site.json만 수정해 브랜드, 작업물, 가격, 문의 정보를 구성할 수 있습니다.",
+    "title": "2K 포트폴리오",
+    "description": "2K 포트폴리오 공간 입니다. 영상 편집자와 클라이언트들의 소통창",
     "githubRepo": "2ghlck/_2hc_Portfolio",
     "brand": {
-      "prefix": "studio",
-      "name": "your-name"
+      "prefix": "studio 2K",
+      "name": "2K"
     },
     "nav": {
       "links": [
         {
           "label": "홈",
           "href": "index.html#home"
+        },
+        {
+          "label": "영상 포트폴리오",
+          "href": "index.html#works"
         },
         {
           "label": "서비스 및 가격",
@@ -76,7 +80,7 @@
           },
           {
             "title": "요시요 아카데미 3기 졸업생",
-            "period": "2025.10.12 ~ 2025.11.12",
+            "period": "2025.10.12 ~ 2025.12.12",
             "description": ""
           }
         ],
@@ -214,7 +218,7 @@
         "title": "이거 진짜에요?",
         "date": "",
         "type": "long",
-        "category": "숏폼"
+        "category": "이샤 키리누키"
       },
       {
         "id": "Uh7B-JcevwA",
